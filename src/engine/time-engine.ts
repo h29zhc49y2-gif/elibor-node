@@ -52,15 +52,7 @@ export class TimeEngine {
 
             logger.info(`[Time] New day: Day ${expectedDay}`);
 
-            // 记录新的一天事件
-            await this.prisma.event.create({
-                data: {
-                    soulId: 0, // 系统事件
-                    type: 'system',
-                    content: `新的一天开始了！星球时间：第${expectedDay}天`,
-                    metadata: JSON.stringify({ day: expectedDay }),
-                },
-            });
+            // 记录新的一天事件（跳过系统事件，因为没有有效的 soulId）
         }
 
         return {
