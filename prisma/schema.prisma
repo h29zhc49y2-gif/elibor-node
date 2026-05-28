@@ -1,0 +1,153 @@
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+    provider = "postgresql"
+    url      = env("DATABASE_URL")
+}
+
+model User {
+    id                Int           @id @default(autoincrement())
+    email             String        @unique
+    password          String
+    level             String        @default("free")
+    maxSouls          Int           @default(1)
+    dailyInterventions Int          @default(2)
+    credits           Int           @default(100)
+    createdAt         DateTime      @default(now())
+    updatedAt         DateTime      @updatedAt
+    souls             Soul[]
+    interventions     Intervention[]
+    adViews           AdView[]
+}
+
+model Soul {
+    id                Int           @id @default(autoincrement())
+    userId            Int
+    name              String
+    age               Int           @default(0)
+    stage             String        @default("child")
+    profession        String        @default("farmer")
+    hunger            Int           @default(50)
+    energy            Int           @default(100)
+    social            Int           @default(50)
+    learning          Int           @default(50)
+    emotion           Int           @default(70)
+    personality       Json          @default("{}")
+    memory            Json          @default("{}")
+    currentAction     String        @default("idle")
+    location          String        @default("home")
+    totalContribution Float         @default(0)
+    status            String        @default("alive")
+    birthDate         DateTime      @default(now())
+    deathDate         DateTime?
+    createdAt         DateTime      @default(now())
+    updatedAt         DateTime      @updatedAt
+    user              User          @relation(fields: [userId], references: [id])
+    events            Event[]
+    memories          Memory[]
+    resources         SoulResource[]
+    relationshipsA    Relationship[] @relation("SoulA")
+    relationshipsB    Relationship[] @relation("SoulB")
+}
+
+model PlanetStats {
+    id          Int      @id @default(autoincrement())
+    industry    Float    @default(0)
+    agriculture Float    @default(0)
+    housing     Float    @default(0)
+    technology  Float    @default(0)
+    energy      Float    @default(0)
+    population  Int      @default(0)
+    dayCount    Int      @default(1)
+    updatedAt   DateTime @updatedAt
+}
+
+model Event {
+    id        Int      @id @default(autoincrement())
+    soulId    Int
+    type      String
+    content   String
+    metadata  Json     @default("{}")
+    createdAt DateTime @default(now())
+    soul      Soul     @relation(fields: [soulId], references: [id])
+}
+
+model Memory {
+    id         Int      @id @default(autoincrement())
+    soulId     Int
+    type       String
+    content    String
+    importance Int      @default(1)
+    createdAt  DateTime @default(now())
+    soul       Soul     @relation(fields: [soulId], references: [id])
+}
+
+model SoulResource {
+    id         Int    @id @default(autoincrement())
+    soulId     Int
+    resourceType String
+    amount     Int    @default(0)
+    soul       Soul   @relation(fields: [soulId], references: [id])
+    @@unique([soulId, resourceType])
+}
+
+model Relationship {
+    id         Int      @id @default(autoincrement())
+    soulIdA    Int
+    soulIdB    Int
+    type       String   @default("stranger")
+    value      Int      @default(0)
+    createdAt  DateTime @default(now())
+    updatedAt  DateTime @updatedAt
+    soulA      Soul     @relation("SoulA", fields: [soulIdA], references: [id])
+    soulB      Soul     @relation("SoulB", fields: [soulIdB], references: [id])
+    @@unique([soulIdA, soulIdB])
+}
+
+model Intervention {
+    id        Int      @id @default(autoincrement())
+    userId    Int
+    soulId    Int
+    type      String
+    effect    Json
+    accepted  Boolean  @default(false)
+    createdAt DateTime @default(now())
+    user      User     @relation(fields: [userId], references: [id])
+}
+
+model Facility {
+    id           Int      @id @default(autoincrement())
+    name         String
+    type         String
+    level        Int      @default(1)
+    planetStatsId Int?
+    createdAt    DateTime @default(now())
+}
+
+model Monument {
+    id           Int      @id @default(autoincrement())
+    soulId       Int      @unique
+    name         String
+    contribution Float
+    lifespan     Int
+    biography    String
+    createdAt    DateTime @default(now())
+}
+
+model DailyReport {
+    id        Int      @id @default(autoincrement())
+    dayCount  Int
+    content   Json
+    createdAt DateTime @default(now())
+    @@unique([dayCount])
+}
+
+model AdView {
+    id            Int      @id @default(autoincrement())
+    userId        Int
+    creditsEarned Int
+    createdAt     DateTime @default(now())
+    user          User     @relation(fields: [userId], references: [id])
+}
