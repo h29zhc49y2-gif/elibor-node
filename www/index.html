@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>聚栖 Elibor</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box}
+        :root{--bg-deep:#050508;--bg-dark:#0a0e17;--bg-card:#0d1117;--bg-input:#161b22;--neon-cyan:#00d4ff;--neon-purple:#8b5cf6;--neon-green:#00ff88;--neon-amber:#ffaa00;--neon-red:#ff4757;--text-primary:#f0f6fc;--text-secondary:#8b949e;--text-muted:#484f58;--radius:12px;--radius-lg:20px}
+        body{font-family:'Noto Sans SC',sans-serif;background:var(--bg-deep);color:var(--text-primary);min-height:100vh}
+        ::-webkit-scrollbar{width:6px}::--webkit-scrollbar-track{background:var(--bg-dark)}::--webkit-scrollbar-thumb{background:var(--text-muted);border-radius:3px}
+        .login-page{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:var(--bg-deep);z-index:1000;transition:opacity .5s,visibility .5s}
+        .login-page.hidden{opacity:0;visibility:hidden;pointer-events:none}
+        .login-bg{position:absolute;inset:0;overflow:hidden}
+        .login-bg canvas{width:100%;height:100%}
+        .login-box{position:relative;z-index:10;width:100%;max-width:380px;text-align:center;padding:20px}
+        .login-logo{margin-bottom:50px;animation:float 6s ease-in-out infinite}
+        @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+        .login-logo svg{width:70px;height:70px;margin-bottom:12px}
+        .login-logo h1{font-family:'Orbitron',sans-serif;font-size:28px;font-weight:700;letter-spacing:10px;background:linear-gradient(135deg,var(--neon-cyan),var(--neon-purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+        .login-logo p{font-size:12px;color:var(--text-secondary);letter-spacing:6px;margin-top:8px}
+        .login-form{background:rgba(255,255,255,.03);border:1px solid rgba(255,255,255,.08);border-radius:var(--radius-lg);padding:36px 28px;backdrop-filter:blur(20px)}
+        .input-group{margin-bottom:18px;text-align:left}
+        .input-group label{display:block;font-size:11px;color:var(--text-secondary);margin-bottom:6px;letter-spacing:1px;text-transform:uppercase}
+        .input-field{width:100%;padding:14px 16px;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:var(--radius);color:var(--text-primary);font-size:15px;transition:all .3s}
+        .input-field::placeholder{color:rgba(255,255,255,.25)}
+        .input-field:focus{outline:none;border-color:var(--neon-cyan);background:rgba(0,212,255,.05);box-shadow:0 0 20px rgba(0,212,255,.15)}
+        .btn-primary{width:100%;padding:14px;background:linear-gradient(135deg,var(--neon-cyan),var(--neon-purple));border:none;border-radius:var(--radius);color:#000;font-size:14px;font-weight:600;letter-spacing:2px;cursor:pointer;transition:all .3s;margin-top:8px}
+        .btn-primary:hover{transform:translateY(-2px);box-shadow:0 10px 30px rgba(0,212,255,.3)}
+        .login-links{margin-top:20px;display:flex;justify-content:center;gap:24px;font-size:13px}
+        .login-links a{color:var(--neon-cyan);text-decoration:none;transition:opacity .2s}
+        .login-links a:hover{opacity:.7}
+        .login-msg{margin-top:16px;padding:12px;border-radius:var(--radius);font-size:13px;text-align:center;animation:fadeIn .3s}
+        .login-msg.error{background:rgba(255,71,87,.1);border:1px solid rgba(255,71,87,.3);color:var(--neon-red)}
+        .login-msg.success{background:rgba(0,255,136,.1);border:1px solid rgba(0,255,136,.3);color:var(--neon-green)}
+        @keyframes fadeIn{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
+        .app{display:none;min-height:100vh}.app.active{display:block}
+        .header{position:sticky;top:0;z-index:100;display:flex;align-items:center;justify-content:space-between;padding:14px 32px;background:rgba(10,14,23,.95);border-bottom:1px solid rgba(255,255,255,.06);backdrop-filter:blur(10px)}
+        .header-brand{display:flex;align-items:center;gap:12px}
+        .header-brand svg{width:32px;height:32px}
+        .header-brand span{font-family:'Orbitron',sans-serif;font-size:16px;font-weight:600;background:linear-gradient(135deg,var(--neon-cyan),var(--neon-purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+        .header-nav{display:flex;gap:4px}
+        .nav-btn{display:flex;align-items:center;gap:6px;padding:10px 18px;background:transparent;border:none;border-radius:var(--radius);color:var(--text-secondary);font-size:13px;cursor:pointer;transition:all .3s}
+        .nav-btn svg{width:18px;height:18px}
+        .nav-btn:hover{color:var(--text-primary);background:rgba(255,255,255,.05)}
+        .nav-btn.active{color:var(--neon-cyan);background:rgba(0,212,255,.1)}
+        .header-right{display:flex;align-items:center;gap:16px}
+        .stat-chip{display:flex;align-items:center;gap:6px;padding:8px 14px;background:var(--bg-input);border-radius:20px;font-size:12px;font-weight:500}
+        .stat-chip svg{width:14px;height:14px}
+        .stat-chip.credits{color:var(--neon-amber)}
+        .stat-chip.actions{color:var(--neon-cyan)}
+        .stat-chip.actions.low{color:var(--neon-red)}
+        .plan-badge{padding:6px 12px;border-radius:20px;font-size:11px;font-weight:600}
+        .plan-badge.free{background:rgba(139,148,158,.15);color:var(--text-secondary)}
+        .plan-badge.pro{background:rgba(0,255,136,.15);color:var(--neon-green)}
+        .plan-badge.max{background:rgba(255,170,0,.15);color:var(--neon-amber)}
+        .btn-upgrade{display:flex;align-items:center;gap:6px;padding:8px 14px;background:linear-gradient(135deg,var(--neon-amber),#d97706);border:none;border-radius:20px;color:#000;font-size:12px;font-weight:600;cursor:pointer;transition:transform .2s}
+        .btn-upgrade:hover{transform:scale(1.05)}
+        .btn-logout{padding:10px;background:transparent;border:none;color:var(--text-muted);cursor:pointer;border-radius:var(--radius);transition:all .2s}
+        .btn-logout:hover{color:var(--neon-red);background:rgba(255,71,87,.1)}
+        .lang-toggle{padding:8px 12px;background:var(--bg-input);border:1px solid rgba(255,255,255,.1);border-radius:20px;color:var(--text-secondary);font-size:12px;font-weight:600;cursor:pointer;transition:all .2s}
+        .lang-toggle:hover{border-color:var(--neon-cyan);color:var(--neon-cyan)}
+        .main-content{padding:28px 32px;max-width:1400px;margin:0 auto}
+        .page-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:28px}
+        .page-title{font-size:24px;font-weight:600;margin-bottom:6px;display:flex;align-items:center;gap:10px}
+        .page-title svg{color:var(--neon-cyan);width:24px;height:24px}
+        .page-subtitle{font-size:14px;color:var(--text-secondary)}
+        .page{display:none}.page.active{display:block}
+        .souls-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:20px}
+        .soul-card{background:var(--bg-card);border:1px solid rgba(255,255,255,.08);border-radius:var(--radius-lg);padding:22px;cursor:pointer;transition:all .3s}
+        .soul-card:hover{transform:translateY(-4px);border-color:rgba(0,212,255,.3);box-shadow:0 8px 30px rgba(0,0,0,.4)}
+        .soul-card-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:18px}
+        .soul-avatar{width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,var(--neon-cyan),var(--neon-purple));display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:700;color:#000;position:relative}
+        .soul-avatar::after{content:'';position:absolute;inset:-4px;border-radius:50%;background:linear-gradient(135deg,var(--neon-cyan),var(--neon-purple));opacity:.2;z-index:-1}
+        .status-dot{position:absolute;bottom:2px;right:2px;width:14px;height:14px;border-radius:50%;background:var(--neon-green);border:3px solid var(--bg-card)}
+        .status-dot.working{background:var(--neon-cyan)}
+        .status-dot.resting{background:var(--text-muted)}
+        .status-dot.dead{background:var(--neon-red)}
+        .stage-badge{padding:4px 10px;border-radius:20px;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:1px}
+        .stage-badge.child{background:rgba(59,130,246,.2);color:#60a5fa}
+        .stage-badge.youth{background:rgba(16,185,129,.2);color:#34d399}
+        .stage-badge.adult{background:rgba(139,92,246,.2);color:#a78bfa}
+        .stage-badge.elder{background:rgba(245,158,11,.2);color:#fbbf24}
+        .stage-badge.senior{background:rgba(239,68,68,.2);color:#f87171}
+        .soul-name{font-size:18px;font-weight:600;margin-bottom:6px}
+        .soul-meta{display:flex;gap:14px;font-size:12px;color:var(--text-secondary);margin-bottom:14px}
+        .soul-meta span{display:flex;align-items:center;gap:4px}
+        .soul-status{display:flex;align-items:center;gap:8px;padding:8px 12px;background:rgba(0,212,255,.08);border-radius:20px;font-size:12px;color:var(--neon-cyan);margin-bottom:16px}
+        .soul-status svg{width:14px;height:14px}
+        .soul-bars{display:flex;flex-direction:column;gap:10px}
+        .bar-row{display:flex;align-items:center;gap:10px}
+        .bar-label{width:50px;font-size:11px;color:var(--text-muted)}
+        .bar-track{flex:1;height:5px;background:var(--bg-input);border-radius:3px;overflow:hidden}
+        .bar-fill{height:100%;border-radius:3px;transition:width .5s}
+        .bar-fill.hunger{background:linear-gradient(90deg,#f97316,#fb923c)}
+        .bar-fill.energy{background:linear-gradient(90deg,var(--neon-cyan),#22d3ee)}
+        .bar-fill.emotion{background:linear-gradient(90deg,var(--neon-purple),#c084fc)}
+        .bar-value{width:34px;font-size:11px;color:var(--text-secondary);text-align:right}
+        .add-soul-card{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;background:rgba(0,212,255,.03);border:2px dashed rgba(0,212,255,.2);border-radius:var(--radius-lg);padding:40px;cursor:pointer;transition:all .3s;min-height:260px}
+        .add-soul-card:hover{border-color:var(--neon-cyan);background:rgba(0,212,255,.08)}
+        .add-soul-icon{width:52px;height:52px;display:flex;align-items:center;justify-content:center;background:rgba(0,212,255,.1);border-radius:50%;color:var(--neon-cyan)}
+        .add-soul-icon svg{width:24px;height:24px}
+        .add-soul-card span{font-size:14px;font-weight:500}
+        .add-soul-card p{font-size:12px;color:var(--text-muted)}
+        .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.8);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;z-index:1000;opacity:0;visibility:hidden;transition:all .3s;padding:20px}
+        .modal-overlay.active{opacity:1;visibility:visible}
+        .modal{background:var(--bg-card);border:1px solid rgba(255,255,255,.1);border-radius:var(--radius-lg);padding:28px;max-width:580px;width:100%;max-height:90vh;overflow-y:auto;transform:translateY(20px);transition:transform .3s}
+        .modal-overlay.active .modal{transform:translateY(0)}
+        .modal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;padding-bottom:20px;border-bottom:1px solid rgba(255,255,255,.06)}
+        .modal-title{display:flex;align-items:center;gap:14px}
+        .modal-avatar{width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,var(--neon-cyan),var(--neon-purple));display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:700;color:#000}
+        .modal-title-info h2{font-size:20px;margin-bottom:6px}
+        .modal-tags{display:flex;gap:8px}
+        .modal-tag{padding:4px 10px;background:var(--bg-input);border-radius:20px;font-size:11px;color:var(--text-secondary)}
+        .modal-close{padding:10px;background:transparent;border:none;color:var(--text-muted);cursor:pointer;border-radius:var(--radius);transition:all .2s}
+        .modal-close:hover{color:var(--text-primary);background:rgba(255,255,255,.1)}
+        .modal-section{margin-bottom:24px}
+        .section-title{font-size:13px;color:var(--text-secondary);margin-bottom:14px;display:flex;align-items:center;gap:8px}
+        .section-title svg{width:16px;height:16px;color:var(--neon-cyan)}
+        .status-bars-detail{display:flex;flex-direction:column;gap:14px}
+        .status-bar-item{display:flex;align-items:center;gap:14px}
+        .status-bar-label{width:60px;font-size:12px;color:var(--text-secondary);display:flex;align-items:center;gap:6px}
+        .status-bar-label svg{width:14px;height:14px}
+        .status-bar-track{flex:1;height:8px;background:var(--bg-input);border-radius:4px;overflow:hidden}
+        .status-bar-fill{height:100%;border-radius:4px;transition:width .5s}
+        .status-bar-fill.social{background:linear-gradient(90deg,var(--neon-purple),#c084fc)}
+        .status-bar-fill.learning{background:linear-gradient(90deg,#10b981,#34d399)}
+        .status-bar-value{width:40px;font-size:13px;font-weight:600;text-align:right}
+        .intervention-hint{font-size:13px;color:var(--text-secondary);margin-bottom:14px}
+        .intervention-hint strong{color:var(--neon-cyan);font-size:16px}
+        .intervention-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+        .intervention-btn{display:flex;flex-direction:column;align-items:center;gap:6px;padding:14px 10px;background:var(--bg-input);border:1px solid rgba(255,255,255,.08);border-radius:var(--radius);color:var(--text-primary);font-size:12px;cursor:pointer;transition:all .3s}
+        .intervention-btn svg{width:22px;height:22px;color:var(--neon-cyan)}
+        .intervention-btn:hover:not(:disabled){border-color:var(--neon-cyan);background:rgba(0,212,255,.08)}
+        .intervention-btn:disabled{opacity:.4;cursor:not-allowed}
+        .planet-header{display:flex;justify-content:space-between;align-items:center}
+        .planet-overall{text-align:right}
+        .planet-overall-label{font-size:12px;color:var(--text-muted)}
+        .planet-overall-value{font-size:28px;font-weight:700;background:linear-gradient(135deg,var(--neon-cyan),var(--neon-purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+        .planet-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px;margin-bottom:28px}
+        .planet-card{background:var(--bg-card);border:1px solid rgba(255,255,255,.08);border-radius:var(--radius);padding:20px;display:flex;gap:14px}
+        .planet-icon{width:44px;height:44px;display:flex;align-items:center;justify-content:center;border-radius:var(--radius);flex-shrink:0}
+        .planet-icon svg{width:22px;height:22px}
+        .planet-icon.industry{background:rgba(0,212,255,.15);color:var(--neon-cyan)}
+        .planet-icon.agriculture{background:rgba(0,255,136,.15);color:var(--neon-green)}
+        .planet-icon.housing{background:rgba(139,92,246,.15);color:var(--neon-purple)}
+        .planet-icon.technology{background:rgba(16,185,129,.15);color:#10b981}
+        .planet-icon.energy{background:rgba(255,170,0,.15);color:var(--neon-amber)}
+        .planet-card h4{font-size:13px;margin-bottom:10px}
+        .planet-value-row{display:flex;align-items:center;gap:10px}
+        .planet-value{font-size:22px;font-weight:700}
+        .planet-bar{flex:1;height:5px;background:var(--bg-input);border-radius:3px;overflow:hidden}
+        .planet-bar-fill{height:100%;border-radius:3px;transition:width .5s}
+        .planet-bar-fill.industry{background:var(--neon-cyan)}
+        .planet-bar-fill.agriculture{background:var(--neon-green)}
+        .planet-bar-fill.housing{background:var(--neon-purple)}
+        .planet-bar-fill.technology{background:#10b981}
+        .planet-bar-fill.energy{background:var(--neon-amber)}
+        .timeline-card{background:var(--bg-card);border:1px solid rgba(255,255,255,.08);border-radius:var(--radius);padding:22px}
+        .timeline-title{font-size:14px;margin-bottom:18px;display:flex;align-items:center;gap:8px}
+        .timeline-title svg{color:var(--neon-cyan);width:18px;height:18px}
+        .timeline{display:flex;flex-direction:column;gap:14px}
+        .timeline-item{display:flex;gap:14px;padding-left:20px;position:relative}
+        .timeline-item::before{content:'';position:absolute;left:0;top:6px;width:8px;height:8px;border-radius:50%;background:var(--neon-cyan)}
+        .timeline-item::after{content:'';position:absolute;left:3px;top:18px;bottom:-18px;width:2px;background:rgba(255,255,255,.08)}
+        .timeline-item:last-child::after{display:none}
+        .timeline-content{font-size:13px;margin-bottom:4px}
+        .timeline-time{font-size:11px;color:var(--text-muted)}
+        .soul-selector{display:flex;gap:10px;margin-bottom:22px;flex-wrap:wrap}
+        .soul-chip{padding:8px 16px;background:var(--bg-card);border:1px solid rgba(255,255,255,.08);border-radius:20px;color:var(--text-secondary);font-size:13px;cursor:pointer;transition:all .2s}
+        .soul-chip:hover,.soul-chip.active{border-color:var(--neon-cyan);color:var(--neon-cyan);background:rgba(0,212,255,.08)}
+        .resources-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:14px}
+        .resource-card{background:var(--bg-card);border:1px solid rgba(255,255,255,.08);border-radius:var(--radius);padding:18px;display:flex;align-items:center;gap:14px}
+        .resource-icon{width:44px;height:44px;display:flex;align-items:center;justify-content:center;border-radius:var(--radius)}
+        .resource-icon svg{width:22px;height:22px}
+        .resource-icon.minerals{background:rgba(139,92,246,.15);color:var(--neon-purple)}
+        .resource-icon.food{background:rgba(249,115,22,.15);color:#f97316}
+        .resource-icon.energy{background:rgba(234,179,8,.15);color:#eab308}
+        .resource-icon.materials{background:rgba(59,130,246,.15);color:#60a5fa}
+        .resource-icon.research{background:rgba(16,185,129,.15);color:#10b981}
+        .resource-info{flex:1}
+        .resource-name{font-size:12px;color:var(--text-secondary);margin-bottom:4px}
+        .resource-amount{font-size:24px;font-weight:700}
+        .resource-trend{display:flex;align-items:center;gap:4px;font-size:11px;color:var(--neon-green)}
+        .resource-trend svg{width:12px;height:12px}
+        .facilities-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px}
+        .facility-card{background:var(--bg-card);border:1px solid rgba(255,255,255,.08);border-radius:var(--radius);padding:20px}
+        .facility-header{display:flex;gap:14px;margin-bottom:14px}
+        .facility-icon{width:44px;height:44px;display:flex;align-items:center;justify-content:center;background:rgba(0,212,255,.1);border-radius:var(--radius);color:var(--neon-cyan)}
+        .facility-icon svg{width:22px;height:22px}
+        .facility-info h3{font-size:15px;margin-bottom:4px}
+        .facility-info p{font-size:12px;color:var(--text-secondary)}
+        .facility-output,.facility-cost{display:flex;flex-wrap:wrap;gap:8px;font-size:11px;margin-bottom:10px}
+        .output-tag,.cost-tag{display:flex;align-items:center;gap:4px;padding:4px 8px;border-radius:4px}
+        .output-tag{background:rgba(0,255,136,.1);color:var(--neon-green)}
+        .cost-tag{background:rgba(255,170,0,.1);color:var(--neon-amber)}
+        .output-tag svg,.cost-tag svg{width:12px;height:12px}
+        .btn-build{width:100%;padding:10px;background:transparent;border:1px solid rgba(0,212,255,.3);border-radius:var(--radius);color:var(--neon-cyan);font-size:13px;cursor:pointer;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:6px}
+        .btn-build:hover{background:rgba(0,212,255,.1)}
+        .btn-build svg{width:16px;height:16px}
+        .ranking-table{background:var(--bg-card);border:1px solid rgba(255,255,255,.08);border-radius:var(--radius);overflow:hidden}
+        .ranking-header{display:grid;grid-template-columns:60px 1fr 100px 80px 100px;gap:16px;padding:14px 20px;background:var(--bg-input);font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px}
+        .ranking-row{display:grid;grid-template-columns:60px 1fr 100px 80px 100px;gap:16px;padding:14px 20px;align-items:center;border-bottom:1px solid rgba(255,255,255,.04);transition:background .2s}
+        .ranking-row:hover{background:rgba(0,212,255,.03)}
+        .ranking-row:last-child{border-bottom:none}
+        .rank-badge{width:30px;height:30px;display:flex;align-items:center;justify-content:center;border-radius:8px;font-weight:700;font-size:13px;background:var(--bg-input)}
+        .rank-badge.gold{background:linear-gradient(135deg,#fbbf24,#f59e0b);color:#000}
+        .rank-badge.silver{background:linear-gradient(135deg,#9ca3af,#6b7280);color:#000}
+        .rank-badge.bronze{background:linear-gradient(135deg,#d97706,#b45309);color:#fff}
+        .rank-soul{display:flex;align-items:center;gap:12px}
+        .rank-avatar{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--neon-cyan),var(--neon-purple));display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#000}
+        .contribution-value{color:var(--neon-cyan);font-weight:600}
+        .subscribe-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+        .plan-card{background:var(--bg-input);border:1px solid rgba(255,255,255,.08);border-radius:var(--radius);padding:20px;text-align:center;position:relative}
+        .plan-card.popular{border-color:var(--neon-amber)}
+        .plan-popular-badge{position:absolute;top:-10px;left:50%;transform:translateX(-50%);padding:4px 14px;background:linear-gradient(135deg,var(--neon-amber),#d97706);border-radius:20px;font-size:10px;font-weight:600;color:#000}
+        .plan-card h3{font-size:15px;margin-bottom:12px}
+        .plan-price{margin-bottom:14px}
+        .plan-price-value{font-size:28px;font-weight:700}
+        .plan-price-unit{font-size:12px;color:var(--text-secondary)}
+        .plan-features{list-style:none;text-align:left;margin-bottom:16px}
+        .plan-features li{display:flex;align-items:center;gap:8px;padding:6px 0;font-size:12px;color:var(--text-secondary)}
+        .plan-features li svg{width:14px;height:14px;color:var(--neon-green)}
+        .btn-subscribe{width:100%;padding:12px;background:linear-gradient(135deg,var(--neon-cyan),var(--neon-purple));border:none;border-radius:var(--radius);color:#000;font-size:13px;font-weight:600;cursor:pointer;transition:all .2s}
+        .btn-subscribe:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(0,212,255,.3)}
+        .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(100px);padding:14px 24px;background:var(--bg-card);border:1px solid rgba(255,255,255,.1);border-radius:var(--radius);font-size:14px;z-index:2000;opacity:0;transition:all .3s}
+        .toast.show{transform:translateX(-50%) translateY(0);opacity:1}
+        .toast.success{border-color:var(--neon-green);color:var(--neon-green)}
+        .toast.error{border-color:var(--neon-red);color:var(--neon-red)}
+        @media(max-width:768px){.header{padding:12px 16px}.header-nav{display:none}.main-content{padding:20px 16px}.souls-grid{grid-template-columns:1fr}.subscribe-grid{grid-template-columns:1fr}.ranking-header,.ranking-row{grid-template-columns:50px 1fr}.ranking-header span:nth-child(3),.ranking-header span:nth-child(4),.ranking-header span:nth-child(5),.ranking-row span:nth-child(3),.ranking-row span:nth-child(4),.ranking-row span:nth-child(5){display:none}}
+    </style>
+</head>
+<body>
+    <div class="login-page" id="loginPage">
+        <div class="login-bg"><canvas id="particles"></canvas></div>
+        <div class="login-box">
+            <div class="login-logo">
+                <svg viewBox="0 0 100 100" fill="none">
+                    <defs><linearGradient id="lg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#00d4ff"/><stop offset="100%" style="stop-color:#8b5cf6"/></linearGradient></defs>
+                    <circle cx="50" cy="50" r="45" stroke="url(#lg)" stroke-width="1" stroke-dasharray="4 2" opacity="0.5"/>
+                    <circle cx="50" cy="50" r="35" stroke="url(#lg)" stroke-width="1"/>
+                    <ellipse cx="50" cy="50" rx="40" ry="15" stroke="url(#lg)" stroke-width="1" opacity="0.6"/>
+                    <circle cx="50" cy="35" r="4" fill="url(#lg)"><animate attributeName="cy" values="35;30;35" dur="3s" repeatCount="indefinite"/></circle>
+                    <circle cx="30" cy="50" r="2" fill="#00d4ff" opacity="0.6"><animate attributeName="opacity" values="0.6;1;0.6" dur="2s" repeatCount="indefinite"/></circle>
+                    <circle cx="70" cy="50" r="2" fill="#8b5cf6" opacity="0.6"><animate attributeName="opacity" values="0.6;1;0.6" dur="2.5s" repeatCount="indefinite"/></circle>
+                </svg>
+                <h1>ELIBOR</h1>
+                <p>聚 · 栖 · 计 · 划</p>
+            </div>
+            <form class="login-form" id="loginForm">
+                <div class="input-group"><label>邮箱</label><input type="email" class="input-field" id="loginEmail" placeholder="your@email.com" required></div>
+                <div class="input-group"><label>密码</label><input type="password" class="input-field" id="loginPassword" placeholder="••••••••" required></div>
+                <button type="button" class="btn-primary" onclick="login()">登 录</button>
+                <div id="loginMsg" class="login-msg" style="display:none"></div>
+            </form>
+            <div class="login-links"><a href="javascript:void(0)" onclick="showRegister()">注册账号</a><a href="javascript:void(0)" onclick="showForgotPassword()">忘记密码</a></div>
+        </div>
+    </div>
+    <div class="app" id="mainApp">
+        <header class="header">
+            <div class="header-brand">
+                <svg viewBox="0 0 100 100" fill="none"><defs><linearGradient id="hg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#00d4ff"/><stop offset="100%" style="stop-color:#8b5cf6"/></linearGradient></defs><circle cx="50" cy="50" r="40" stroke="url(#hg)" stroke-width="2"/><circle cx="50" cy="30" r="5" fill="url(#hg)"/></svg>
+                <span>聚栖</span>
+            </div>
+            <nav class="header-nav">
+                <button class="nav-btn active" data-page="souls"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg><span>我的栖人</span></button>
+                <button class="nav-btn" data-page="planet"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg><span>星球实况</span></button>
+                <button class="nav-btn" data-page="resources"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg><span>资源</span></button>
+                <button class="nav-btn" data-page="facilities"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="2" width="16" height="20" rx="2" ry="2"/><path d="M9 22v-4h6v4"/></svg><span>设施</span></button>
+                <button class="nav-btn" data-page="monuments"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="2" x2="12" y2="6"/><path d="M12 22v-8"/><path d="M12 14l-4 0"/><path d="M12 14l4 0"/></svg><span>纪念碑</span></button>
+            </nav>
+            <div class="header-right">
+                <div class="stat-chip credits"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v12"/><path d="M8 10h8"/><path d="M8 14h8"/></svg><span id="userCredits">0</span></div>
+                <div class="stat-chip actions" id="actionsChip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg><span id="userActions">0/0</span></div>
+                <span class="plan-badge" id="planBadge">免费版</span>
+                <button class="btn-upgrade" onclick="showSubscribe()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>升级</button>
+                <button class="btn-logout" onclick="logout()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg></button>
+                <button class="lang-toggle" onclick="toggleLang()" id="langToggle">EN</button>
+            </div>
+        </header>
+        <main class="main-content">
+            <div class="page active" id="pageSouls">
+                <div class="page-header">
+                    <div><h1 class="page-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>我的栖人</h1><p class="page-subtitle">管理和引导你的栖人度过一生</p></div>
+                    <button class="btn-primary" style="max-width:180px" onclick="showCreateSoul()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>创造栖人</button>
+                </div>
+                <div class="souls-grid" id="soulsGrid"></div>
+            </div>
+            <div class="page" id="pagePlanet">
+                <div class="page-header planet-header">
+                    <div><h1 class="page-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/></svg>星球实况</h1><p class="page-subtitle">星球发展综合指标</p></div>
+                    <div class="planet-overall"><div class="planet-overall-label">综合指数</div><div class="planet-overall-value" id="planetOverall">0%</div></div>
+                </div>
+                <div class="planet-grid" id="planetGrid"></div>
+                <div class="timeline-card"><h3 class="timeline-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>实时动态</h3><div class="timeline" id="timeline"></div></div>
+            </div>
+            <div class="page" id="pageResources">
+                <div class="page-header"><div><h1 class="page-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>资源管理</h1><p class="page-subtitle">查看和管理栖人的资源产出</p></div></div>
+                <div class="soul-selector" id="soulSelector"></div>
+                <div class="resources-grid" id="resourcesGrid"></div>
+            </div>
+            <div class="page" id="pageFacilities">
+                <div class="page-header"><div><h1 class="page-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="2" width="16" height="20" rx="2" ry="2"/><path d="M9 22v-4h6v4"/></svg>设施建造</h1><p class="page-subtitle">建造和升级建筑设施</p></div></div>
+                <div class="facilities-grid" id="facilitiesGrid"></div>
+            </div>
+            <div class="page" id="pageMonuments">
+                <div class="page-header"><div><h1 class="page-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="2" x2="12" y2="6"/><path d="M12 22v-8"/><path d="M12 14l-4 0"/><path d="M12 14l4 0"/></svg>栖人纪念碑</h1><p class="page-subtitle">永远铭记为星球做出贡献的栖人</p></div></div>
+                <div class="ranking-table"><div class="ranking-header"><span>排名</span><span>栖人</span><span>职业</span><span>寿命</span><span>贡献值</span></div><div id="monumentsList"></div></div>
+            </div>
+        </main>
+    </div>
+    <div class="modal-overlay" id="soulModal"><div class="modal">
+        <div class="modal-header">
+            <div class="modal-title"><div class="modal-avatar" id="modalAvatar">栖</div><div class="modal-title-info"><h2 id="modalName">栖人名称</h2><div class="modal-tags"><span class="modal-tag" id="modalStage">成年</span><span class="modal-tag" id="modalAge">26岁</span><span class="modal-tag" id="modalProfession">工程师</span></div></div></div>
+            <button class="modal-close" onclick="closeSoulModal()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
+        </div>
+        <div class="modal-section"><h3 class="section-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>当前状态</h3><div class="status-bars-detail" id="modalStatusBars"></div></div>
+        <div class="modal-section"><h3 class="section-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>干预行动</h3><p class="intervention-hint">剩余干预次数: <strong id="modalActions">0</strong> / <span id="modalMaxActions">0</span></p><div class="intervention-grid" id="interventionGrid"></div></div>
+    </div></div>
+    <div class="modal-overlay" id="subscribeModal"><div class="modal">
+        <div class="modal-header"><div class="modal-title"><svg viewBox="0 0 24 24" fill="none" stroke="var(--neon-amber)" stroke-width="2" width="24" height="24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg><h2>选择订阅方案</h2></div><button class="modal-close" onclick="closeSubscribe()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
+        <div class="subscribe-grid">
+            <div class="plan-card"><h3>Pro 月度</h3><div class="plan-price"><span class="plan-price-value">¥30</span><span class="plan-price-unit">/月</span></div><ul class="plan-features"><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>3个栖人</li><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>5次干预/天</li><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>50信用点/天</li></ul><button class="btn-subscribe" onclick="subscribe('pro_monthly')">立即订阅</button></div>
+            <div class="plan-card popular"><span class="plan-popular-badge">推荐</span><h3>Pro 年度</h3><div class="plan-price"><span class="plan-price-value">¥300</span><span class="plan-price-unit">/年</span></div><ul class="plan-features"><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>3个栖人</li><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>5次干预/天</li><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>50信用点/天</li></ul><button class="btn-subscribe" onclick="subscribe('pro_yearly')">立即订阅</button></div>
+            <div class="plan-card"><h3>MAX 月度</h3><div class="plan-price"><span class="plan-price-value">¥68</span><span class="plan-price-unit">/月</span></div><ul class="plan-features"><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>5个栖人</li><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>无限干预</li><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>200信用点/天</li></ul><button class="btn-subscribe" onclick="subscribe('max_monthly')">立即订阅</button></div>
+            <div class="plan-card"><h3>MAX 年度</h3><div class="plan-price"><span class="plan-price-value">¥680</span><span class="plan-price-unit">/年</span></div><ul class="plan-features"><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>5个栖人</li><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>无限干预</li><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>200信用点/天</li></ul><button class="btn-subscribe" onclick="subscribe('max_yearly')">立即订阅</button></div>
+        </div>
+    </div></div>
+    <div class="modal-overlay" id="createSoulModal"><div class="modal" style="max-width:400px">
+        <div class="modal-header"><div class="modal-title"><svg viewBox="0 0 24 24" fill="none" stroke="var(--neon-purple)" stroke-width="2" width="24" height="24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg><h2>创造新栖人</h2></div><button class="modal-close" onclick="closeCreateSoul()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
+        <p style="color:var(--text-secondary);font-size:13px;margin-bottom:20px">为你的栖人取一个名字，开启新的旅程</p>
+        <div class="input-group"><label>栖人名称</label><input type="text" class="input-field" id="newSoulName" placeholder="输入名称..." maxlength="20"></div>
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:20px;font-size:13px;color:var(--text-secondary)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><circle cx="12" cy="12" r="10"/><path d="M12 6v12"/><path d="M8 10h8"/><path d="M8 14h8"/></svg>消耗: <span style="color:var(--neon-amber);font-weight:600">100 信用点</span></div>
+        <button class="btn-primary" onclick="createSoul()" id="btnCreateSoul">创造栖人</button>
+    </div></div>
+    <div class="toast" id="toast"></div>
+    <script>
+    const API_BASE='https://elibor-node-production.up.railway.app/api';
+    let token=localStorage.getItem('elibor_token');
+    let userData={};
+    let souls=[];
+    let selectedSoulId=null;
+    let currentLang=localStorage.getItem('lang')||'zh';
+    const i18n={zh:{},en:{}};
+    const stages={child:'儿童',youth:'青年',adult:'成年',elder:'老年',senior:'暮年'};
+    const stages_en={child:'Child',youth:'Youth',adult:'Adult',elder:'Elder',senior:'Senior'};
+    const professions={miner:'矿工',farmer:'农民',engineer:'工程师',scientist:'科学家',builder:'建筑工',energy_engineer:'能源工程师',teacher:'教师',doctor:'医生'};
+    const statusIcons={hunger:'utensils',energy:'battery-charging',emotion:'heart',social:'users',learning:'book-open'};
+    const statusLabels={hunger:'饱食',energy:'精力',emotion:'情绪',social:'社交',learning:'学习'};
+    const resourceIcons={minerals:'gem',food:'wheat',energy:'zap',materials:'hammer',research:'flask-conical'};
+    const resourceNames={minerals:'矿石',food:'食物',energy:'能源',materials:'材料',research:'研究点'};
+    const facilityIcons={mine:'pickaxe',farm:'leaf',power_plant:'zap',workshop:'hammer',lab:'flask-conical',hospital:'heart-pulse',school:'book-open',residence:'home'};
+    const actionIcons={idle:'circle-dot',working:'hammer',resting:'moon',socializing:'users',learning:'book-open',eating:'utensils',walking:'footprints',dead:'skull'};
+    const actionNames={idle:'空闲中',working:'工作中',resting:'休息中',socializing:'社交中',learning:'学习中',eating:'进食中',walking:'移动中',dead:'已故'};
+    const interventions=[{id:'feed',name:'喂食',icon:'utensils'},{id:'rest',name:'休息',icon:'moon'},{id:'work',name:'工作',icon:'hammer'},{id:'social',name:'社交',icon:'users'},{id:'learn',name:'学习',icon:'book-open'},{id:'exercise',name:'锻炼',icon:'dumbbell'}];
+    const planetIndexes=[{key:'industry',name:'工业',icon:'factory'},{key:'agriculture',name:'农业',icon:'wheat'},{key:'housing',name:'居住',icon:'home'},{key:'technology',name:'科技',icon:'flask-conical'},{key:'energy',name:'能源',icon:'zap'}];
+    const facilityTypes=[{type:'mine',name:'采矿站',desc:'开采矿石资源',output:{minerals:5},cost:{minerals:100,materials:50}},{type:'farm',name:'农场',desc:'种植食物资源',output:{food:4},cost:{minerals:80,materials:40}},{type:'power_plant',name:'发电站',desc:'产生能源',output:{energy:6},cost:{minerals:120,materials:60}},{type:'workshop',name:'工坊',desc:'加工材料',output:{materials:3},cost:{minerals:100,materials:80}},{type:'lab',name:'研究实验室',desc:'产出研究点',output:{research:2},cost:{minerals:150,materials:100}},{type:'hospital',name:'医疗中心',desc:'恢复健康',output:{energy:3},cost:{minerals:130,materials:70}},{type:'school',name:'学校',desc:'提升学习',output:{research:1},cost:{minerals:90,materials:50}},{type:'residence',name:'居住区',desc:'提升社交',output:{social:5},cost:{minerals:60,materials:30}}];
+    function showToast(msg,type='success'){const t=document.getElementById('toast');t.textContent=msg;t.className='toast '+type+' show';setTimeout(()=>t.classList.remove('show'),3e3)}
+    async function api(path,opts={}){const h={'Content-Type':'application/json'};if(token)h['Authorization']='Bearer '+token;let url=path;if(!path.startsWith('http'))url=API_BASE+path;const r=await fetch(url,{...opts,headers:{...h,...opts.headers}});return r.json()}
+    function initParticles(){const c=document.getElementById('particles'),x=c.getContext('2d');let ps=[];function rs(){c.width=window.innerWidth;c.height=window.innerHeight};class P{constructor(){this.r()};r(){this.x=Math.random()*c.width;this.y=c.height+10;this.s=Math.random()*2+.5;this.sy=Math.random()*.5+.2;this.sx=(Math.random()-.5)*.3;this.o=Math.random()*.5+.1;this.c=Math.random()>.5?'#00d4ff':'#8b5cf6'};u(){this.y-=this.sy;this.x+=this.sx;this.o-=.002;if(this.y<-10||this.o<=0)this.r()};d(){x.beginPath();x.arc(this.x,this.y,this.s,0,Math.PI*2);x.fillStyle=this.c;x.globalAlpha=this.o;x.fill();x.globalAlpha=1}};function init(){ps=[];const n=Math.min(100,Math.floor(c.width*c.height/1e4));for(let i=0;i<n;i++){const p=new P();p.y=Math.random()*c.height;ps.push(p)}}function a(){x.fillStyle='rgba(5,5,8,.1)';x.fillRect(0,0,c.width,c.height);ps.forEach(p=>{p.u();p.d()});requestAnimationFrame(a)};window.addEventListener('resize',()=>{rs();init()});rs();init();a()}
+    function showRegister(){const f=document.querySelector('.login-form');f.innerHTML='<div class="input-group"><label>用户名</label><input type="text" class="input-field" id="regUser" placeholder="设置用户名" required></div><div class="input-group"><label>邮箱</label><input type="email" class="input-field" id="regEmail" placeholder="your@email.com" required></div><div class="input-group"><label>密码</label><input type="password" class="input-field" id="regPass" placeholder="设置密码" required></div><button type="button" class="btn-primary" onclick="doRegister()">创 建 账 号</button><div id="loginMsg" class="login-msg" style="display:none"></div><div class="login-links"><a href="#" onclick="location.reload()">返回登录</a></div>';f.addEventListener('submit',async e=>{e.preventDefault();const u=document.getElementById('regUser').value,e2=document.getElementById('regEmail').value,p=document.getElementById('regPass').value,msg=document.getElementById('loginMsg');try{const d=await api('/auth/register',{method:'POST',body:JSON.stringify({email:e2,password:p})});if(d.code===200){localStorage.setItem('elibor_token',d.data.token);token=d.data.token;showApp()}else{msg.textContent=d.message||'注册失败';msg.className='login-msg error';msg.style.display='block'}}catch(err){msg.textContent='网络错误';msg.className='login-msg error';msg.style.display='block'}})}
+    async function login(){const e=document.getElementById('loginEmail').value,p=document.getElementById('loginPassword').value,msg=document.getElementById('loginMsg');try{const d=await api('/auth/login',{method:'POST',body:JSON.stringify({email:e,password:p})});if(d.code===200){localStorage.setItem('elibor_token',d.data.token);token=d.data.token;showApp()}else{msg.textContent=d.message||'登录失败';msg.className='login-msg error';msg.style.display='block'}}catch(err){msg.textContent='网络错误';msg.className='login-msg error';msg.style.display='block'}}
+    async function doRegister(){const u=document.getElementById('regUser').value,e2=document.getElementById('regEmail').value,p=document.getElementById('regPass').value,msg=document.getElementById('loginMsg');try{const d=await api('/auth/register',{method:'POST',body:JSON.stringify({email:e2,password:p})});if(d.code===200){localStorage.setItem('elibor_token',d.data.token);token=d.data.token;showApp()}else{msg.textContent=d.message||'注册失败';msg.className='login-msg error';msg.style.display='block'}}catch(err){msg.textContent='网络错误';msg.className='login-msg error';msg.style.display='block'}}
+    function logout(){localStorage.removeItem('elibor_token');token=null;document.getElementById('loginPage').classList.remove('hidden');document.getElementById('mainApp').classList.remove('active')}
+    function toggleLang(){currentLang=currentLang==='zh'?'en':'zh';localStorage.setItem('lang',currentLang);document.getElementById('langToggle').textContent=currentLang==='zh'?'EN':'中文';renderSouls();renderPlanet()}
+    function showForgotPassword(){alert('请联系管理员重置密码: admin@elibor.com')}
+    async function showApp(){document.getElementById('loginPage').classList.add('hidden');document.getElementById('mainApp').classList.add('active');initParticles();await loadUserData();renderSouls();renderPlanet();renderFacilities()}
+    async function loadUserData(){try{const d=await api('/auth/me');if(d.code===200){userData=d.data;souls=userData.souls||[];document.getElementById('userCredits').textContent=userData.credits||0;document.getElementById('userActions').textContent=(userData.current_interventions||0)+'/'+(userData.daily_interventions||0);document.getElementById('actionsChip').className='stat-chip actions'+(userData.current_interventions<=1?' low':'');const b=document.getElementById('planBadge');b.textContent=userData.plan==='free'?'免费版':userData.plan.includes('max')?'MAX版':'Pro版';b.className='plan-badge '+(userData.plan==='free'?'free':userData.plan.includes('max')?'max':'pro')}else{logout()}}catch(err){logout()}}
+    function renderSouls(){const g=document.getElementById('soulsGrid');const t=currentLang==='zh';const stageNames=t?stages:stages_en;const profNames=t?professions:{miner:'Miner',farmer:'Farmer',engineer:'Engineer',scientist:'Scientist',builder:'Builder',energy_engineer:'Energy Eng.',teacher:'Teacher',doctor:'Doctor'};const actionNameMap=t?actionNames:{idle:'Idle',working:'Working',resting:'Resting',socializing:'Socializing',learning:'Learning',eating:'Eating',walking:'Walking',dead:'Deceased'};const ageLabel=t?'岁':' yrs';const createLabel=t?'创造新栖人':'Create Soul';const costLabel=t?'消耗100信用点':'Cost: 100 Credits';let html=souls.map(s=>'<div class="soul-card" onclick="openSoul(\''+s.id+'\')"><div class="soul-card-header"><div class="soul-avatar">'+s.name[0]+'<div class="status-dot '+s.current_action+'"></div></div><span class="stage-badge '+s.stage+'">'+stageNames[s.stage]+'</span></div><h3 class="soul-name">'+s.name+'</h3><div class="soul-meta"><span>'+s.age+ageLabel+'</span><span>'+(profNames[s.profession]||s.profession)+'</span></div><div class="soul-status">'+(actionNameMap[s.current_action]||'Idle')+'</div><div class="soul-bars"><div class="bar-row"><span class="bar-label">'+(t?'饱食':'Food')+'</span><div class="bar-track"><div class="bar-fill hunger" style="width:'+(s.hunger||50)+'%"></div></div><span class="bar-value">'+(s.hunger||50)+'%</span></div><div class="bar-row"><span class="bar-label">'+(t?'精力':'Energy')+'</span><div class="bar-track"><div class="bar-fill energy" style="width:'+(s.energy||50)+'%"></div></div><span class="bar-value">'+(s.energy||50)+'%</span></div><div class="bar-row"><span class="bar-label">'+(t?'情绪':'Mood')+'</span><div class="bar-track"><div class="bar-fill emotion" style="width:'+(s.emotion||50)+'%"></div></div><span class="bar-value">'+(s.emotion||50)+'%</span></div></div></div>').join('');html+='<div class="add-soul-card" onclick="showCreateSoul()"><div class="add-soul-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div><span>'+createLabel+'</span><p>'+costLabel+'</p></div>';g.innerHTML=html}
+    function renderPlanet(){const g=document.getElementById('planetGrid');let total=0;const vals={industry:25,agriculture:20,housing:15,technology:10,energy:30};planetIndexes.forEach(p=>total+=vals[p.key]);total=Math.round(total/5);document.getElementById('planetOverall').textContent=total+'%';g.innerHTML=planetIndexes.map(p=>'<div class="planet-card"><div class="planet-icon '+p.key+'"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M'+p.icon+'"/></svg></div><div><h4>'+p.name+'指数</h4><div class="planet-value-row"><span class="planet-value">'+vals[p.key]+'%</span><div class="planet-bar"><div class="planet-bar-fill '+p.key+'" style="width:'+vals[p.key]+'%"></div></div></div></div>').join('');document.getElementById('timeline').innerHTML='<div class="timeline-item"><div class="timeline-content">栖人小明完成了采矿工作，产出50单位矿石</div><div class="timeline-time">2分钟前</div></div><div class="timeline-item"><div class="timeline-content">工业指数突破30！</div><div class="timeline-time">10分钟前</div></div><div class="timeline-item"><div class="timeline-content">新栖人小红加入了星球</div><div class="timeline-time">30分钟前</div></div>'}
+    function renderFacilities(){const g=document.getElementById('facilitiesGrid');g.innerHTML=facilityTypes.map(f=>'<div class="facility-card"><div class="facility-header"><div class="facility-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg></div><div class="facility-info"><h3>'+f.name+'</h3><p>'+f.desc+'</p></div></div><div class="facility-output"><span style="color:var(--text-muted)">产出:</span>'+Object.entries(f.output).map(([k,v])=>'<span class="output-tag"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>'+resourceNames[k]+' +'+v+'</span>').join('')+'</div><div class="facility-cost"><span style="color:var(--text-muted)">费用:</span>'+Object.entries(f.cost).map(([k,v])=>'<span class="cost-tag"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/></svg>'+resourceNames[k]+' '+v+'</span>').join('')+'</div><button class="btn-build" onclick="buildFacility(\''+f.type+'\')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>建造</button></div>').join('')}
+    function openSoul(id){const s=souls.find(x=>x.id===id);if(!s)return;selectedSoulId=id;document.getElementById('modalAvatar').textContent=s.name[0];document.getElementById('modalName').textContent=s.name;document.getElementById('modalStage').textContent=stages[s.stage]||'成年';document.getElementById('modalAge').textContent=s.age+'岁';document.getElementById('modalProfession').textContent=professions[s.profession]||s.profession;document.getElementById('modalActions').textContent=userData.current_interventions||0;document.getElementById('modalMaxActions').textContent=userData.daily_interventions||0;const sb=document.getElementById('modalStatusBars');sb.innerHTML=Object.entries({hunger:s.hunger||50,energy:s.energy||50,emotion:s.emotion||50,social:s.social||50,learning:s.learning||50}).map(([k,v])=>'<div class="status-bar-item"><span class="status-bar-label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M'+statusIcons[k]+'"/></svg>'+statusLabels[k]+'</span><div class="status-bar-track"><div class="status-bar-fill '+k+'" style="width:'+v+'%;background:'+{hunger:'linear-gradient(90deg,#f97316,#fb923c)',energy:'linear-gradient(90deg,#00d4ff,#22d3ee)',emotion:'linear-gradient(90deg,#8b5cf6,#c084fc)',social:'linear-gradient(90deg,#8b5cf6,#c084fc)',learning:'linear-gradient(90deg,#10b981,#34d399)'}[k]+'"></div></div><span class="status-bar-value">'+v+'%</span></div>').join('');const ig=document.getElementById('interventionGrid');ig.innerHTML=interventions.map(i=>'<button class="intervention-btn" onclick="performIntervention(\''+i.id+'\')" '+(userData.current_interventions<=0?'disabled':'')+'><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M'+i.icon+'"/></svg>'+i.name+'</button>').join('');document.getElementById('soulModal').classList.add('active')}
+    function closeSoulModal(){document.getElementById('soulModal').classList.remove('active')}
+    function showCreateSoul(){document.getElementById('createSoulModal').classList.add('active');document.getElementById('newSoulName').value=''}
+    function closeCreateSoul(){document.getElementById('createSoulModal').classList.remove('active')}
+    function showSubscribe(){document.getElementById('subscribeModal').classList.add('active')}
+    function closeSubscribe(){document.getElementById('subscribeModal').classList.remove('active')}
+    async function createSoul(){const name=document.getElementById('newSoulName').value.trim();if(!name)return;try{const d=await api('/souls',{method:'POST',body:JSON.stringify({name})});if(d.code===200){souls.push(d.data);renderSouls();closeCreateSoul();showToast('栖人创造成功')}else{showToast(d.message||'创造失败','error')}}catch(e){showToast('网络错误','error')}}
+    async function buildFacility(type){if(!souls.length)return;try{const d=await api('/planet/stats');if(d.code===200){showToast('建造成功')}else{showToast(d.message||'建造失败','error')}}catch(e){showToast('网络错误','error')}}
+    async function performIntervention(action){if(!selectedSoulId||userData.current_interventions<=0)return;try{const d=await api('/api/interventions/'+selectedSoulId+'/perform',{method:'POST',body:JSON.stringify({action})});if(d.code===200){userData.current_interventions--;document.getElementById('userActions').textContent=userData.current_interventions+'/'+userData.daily_interventions;document.getElementById('modalActions').textContent=userData.current_interventions;showToast('干预成功');await loadUserData()}else{showToast(d.message||'干预失败','error')}}catch(e){showToast('网络错误','error')}}
+    async function subscribe(planId){try{const d=await api('/api/payments/order',{method:'POST',body:JSON.stringify({plan_id:planId})});if(d.code===200&&d.data.url){window.location.href=d.data.url}else{showToast('订阅创建失败','error')}}catch(e){showToast('网络错误','error')}}
+    document.querySelectorAll('.nav-btn').forEach(function(btn){btn.addEventListener('click',function(){document.querySelectorAll('.nav-btn').forEach(function(b){b.classList.remove('active')});btn.classList.add('active');var pageName=btn.dataset.page;pageName=pageName.charAt(0).toUpperCase()+pageName.slice(1);document.querySelectorAll('.page').forEach(function(p){p.classList.remove('active')});document.getElementById('page'+pageName).classList.add('active')})});
+    if(token){showApp()}else{initParticles()}
+    </script></body></html>

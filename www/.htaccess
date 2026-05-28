@@ -1,0 +1,11 @@
+RewriteEngine On
+RewriteBase /
+
+# API routes
+RewriteCond %{REQUEST_URI} ^/api/
+RewriteRule ^api/(.*)$ api.php?_route=$1 [L,QSA]
+
+# SPA routes - all other requests go to index.php
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ index.php [L]
