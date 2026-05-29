@@ -244,6 +244,86 @@ export class ContentEngine {
             conditions: {}
         });
         
+        this.templates.set('weather:flare', {
+            source: 'weather',
+            type: 'flare',
+            templateCn: '太阳耀斑来袭，天空染上红色',
+            templateEn: 'Solar flare incoming, the sky turns red',
+            variantsCn: [
+                '太阳耀斑来袭，天空染上红色',
+                '强烈的光芒笼罩大地',
+                '耀眼的太阳活动让天空泛红'
+            ],
+            variantsEn: [
+                'Solar flare incoming, the sky turns red',
+                'Intense light blankets the land',
+                'Solar activity paints the sky in red'
+            ],
+            icon: 'sunset',
+            urgency: 'medium',
+            conditions: {}
+        });
+        
+        this.templates.set('weather:acid_rain', {
+            source: 'weather',
+            type: 'acid_rain',
+            templateCn: '酸雨落下，需要防护装备',
+            templateEn: 'Acid rain falls, protective gear required',
+            variantsCn: [
+                '酸雨落下，需要防护装备',
+                '腐蚀性的雨滴从天而降',
+                '空气中弥漫着刺鼻的气味'
+            ],
+            variantsEn: [
+                'Acid rain falls, protective gear required',
+                'Corrosive droplets fall from the sky',
+                'A pungent smell fills the air'
+            ],
+            icon: 'cloud-rain',
+            urgency: 'medium',
+            conditions: {}
+        });
+        
+        this.templates.set('weather:extreme_cold', {
+            source: 'weather',
+            type: 'extreme_cold',
+            templateCn: '极寒来袭，温度骤降',
+            templateEn: 'Extreme cold sweeps in, temperature drops',
+            variantsCn: [
+                '极寒来袭，温度骤降',
+                '冰霜覆盖了一切',
+                '寒风刺骨，空气都冻结了'
+            ],
+            variantsEn: [
+                'Extreme cold sweeps in, temperature drops',
+                'Frost covers everything',
+                'The biting cold freezes the very air'
+            ],
+            icon: 'snowflake',
+            urgency: 'medium',
+            conditions: {}
+        });
+        
+        this.templates.set('weather:sandstorm', {
+            source: 'weather',
+            type: 'sandstorm',
+            templateCn: '风沙席卷天地，遮蔽了远方的光',
+            templateEn: 'The storm swallows the horizon, dimming even the distant light',
+            variantsCn: [
+                '风沙席卷天地，遮蔽了远方的光',
+                '黄沙漫天，能见度骤降',
+                '风暴呼啸，沙砾拍打着栖居舱'
+            ],
+            variantsEn: [
+                'The storm swallows the horizon, dimming even the distant light',
+                'Yellow sand fills the sky, visibility plummets',
+                'The wind howls, sand battering the habitat'
+            ],
+            icon: 'wind',
+            urgency: 'medium',
+            conditions: {}
+        });
+        
         this.templates.set('meteor:mineral', {
             source: 'meteor',
             type: 'mineral',
