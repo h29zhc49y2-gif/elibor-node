@@ -120,6 +120,33 @@ model NarrativeMemory {
     @@index([importance])
 }
 
+model SocialGraph {
+    id          Int       @id @default(autoincrement())
+    soulAId    Int
+    soulBId    Int
+    trust       Float     @default(0.5)
+    intimacy    Float     @default(0)
+    familiarity Float     @default(0)
+    tag         String    @default("stranger")
+    interactionCount Int    @default(0)
+    createdAt   DateTime  @default(now())
+    updatedAt   DateTime  @updatedAt
+    @@unique([soulAId, soulBId])
+}
+
+model SocialInteraction {
+    id          Int       @id @default(autoincrement())
+    soulAId    Int
+    soulBId    Int
+    type        String
+    contentCn   String?
+    contentEn  String?
+    effect     Json
+    timestamp   DateTime  @default(now())
+    @@index([soulAId, timestamp])
+    @@index([soulBId, timestamp])
+}
+
 model PlanetStats {
     id          Int      @id @default(autoincrement())
     oxygen      Float    @default(0)
