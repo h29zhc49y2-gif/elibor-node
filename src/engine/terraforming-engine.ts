@@ -9,6 +9,7 @@ export interface TerraformingIndices {
     biomass: number;
     tir: number;
     stage: number;
+    stageName: string;
 }
 
 const STAGE_THRESHOLDS = [
@@ -48,10 +49,23 @@ export class TerraformingEngine {
     private prisma: PrismaClient;
     private contentEngine: ContentEngine;
     private lastStage: number = 1;
+    private currentIndices: TerraformingIndices = {
+        oxygen: 0,
+        climate: 5,
+        water: 0,
+        biomass: 0,
+        tir: 5,
+        stage: 1,
+        stageName: '荒芜期'
+    };
 
     constructor(prisma: PrismaClient) {
         this.prisma = prisma;
         this.contentEngine = new ContentEngine(prisma);
+    }
+
+    getIndices(): TerraformingIndices {
+        return this.currentIndices;
     }
 
     async calculate(soulCount: number, facilities: { type: string; level: number }[]): Promise<TerraformingIndices> {
@@ -64,6 +78,9 @@ export class TerraformingEngine {
 
         const tir = this.calculateTIR(oxygen, climate, water, biomass);
         const stage = this.calculateStage(tir);
+        const stageNameInfo = this.getStageName(stage);
+
+        this.currentIndices = { oxygen, climate, water, biomass, tir, stage, stageName: stageNameInfo.cn };
 
         await this.updateStats(oxygen, climate, water, biomass, tir, stage);
 
@@ -72,7 +89,7 @@ export class TerraformingEngine {
             this.lastStage = stage;
         }
 
-        return { oxygen, climate, water, biomass, tir, stage };
+        return this.currentIndices;
     }
 
     private calculateOxygen(soulCount: number, facilities: { type: string; level: number }[]): number {

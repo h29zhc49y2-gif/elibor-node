@@ -7,12 +7,10 @@ export interface PlanetTime {
     day: number;
     hour: number;
     minute: number;
-    timestamp: Date;
 }
 
 export class TimeEngine {
     private prisma: PrismaClient;
-    private lastTickRealTime: number | null = null;
 
     constructor(prisma: PrismaClient) {
         this.prisma = prisma;
@@ -70,15 +68,13 @@ export class TimeEngine {
         await this.prisma.planetStats.update({
             where: { id: stats.id },
             data: {
-                year: newYear,
-                month: newMonth,
-                dayCount: newDay,
                 hour: newHour,
+                dayCount: newDay,
+                month: newMonth,
+                year: newYear,
                 lastTickTime: now,
             },
         });
-
-        this.lastTickRealTime = now.getTime();
 
         return {
             year: newYear,
@@ -86,7 +82,6 @@ export class TimeEngine {
             day: newDay,
             hour: newHour,
             minute: 0,
-            timestamp: now,
         };
     }
 
@@ -123,16 +118,9 @@ export class TimeEngine {
             month: stats.month,
             day: stats.dayCount,
             hour: stats.hour,
-            minute: Math.floor(currentMinute),
-            timestamp: new Date(),
+            minute: currentMinute,
         };
     }
-
-    getPlanetTimeString(time: PlanetTime): string {
-        return `聚栖${time.year}年 ${String(time.month).padStart(2, '0')}月${String(time.day).padStart(2, '0')}日 ${String(time.hour).padStart(2, '0')}:${String(time.minute).padStart(2, '0')}`;
-    }
-
-    getPlanetTimeStringEn(time: PlanetTime): string {
-        return `Year ${time.year} ${String(time.month).padStart(2, '0')}/${String(time.day).padStart(2, '0')} ${String(time.hour).padStart(2, '0')}:${String(time.minute).padStart(2, '0')}`;
-    }
 }
+
+export const timeEngineInstance = new TimeEngine(new PrismaClient());

@@ -3,6 +3,7 @@ import prisma from '../../lib/database.js';
 import { authMiddleware } from '../middleware/auth.js';
 import logger from '../../lib/logger.js';
 import { TimeEngine } from '../../engine/time-engine.js';
+import { terraformingEngine } from '../../engine/terraforming-engine.js';
 
 const router = Router();
 const timeEngine = new TimeEngine(prisma);
@@ -31,12 +32,20 @@ router.get('/stats', authMiddleware, async (req: Request, res: Response) => {
         }
 
         const planetTime = await timeEngine.getCurrentPlanetTime();
+        const indices = terraformingEngine.getIndices();
 
         res.json({
             code: 200,
             message: 'success',
             data: {
-                ...stats,
+                oxygen: indices.oxygen,
+                climate: indices.climate,
+                water: indices.water,
+                biomass: indices.biomass,
+                tir: indices.tir,
+                stage: indices.stage,
+                stageName: indices.stageName,
+                population: stats.population,
                 planetTime,
             },
         });

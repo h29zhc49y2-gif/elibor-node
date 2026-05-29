@@ -54,14 +54,12 @@ model Soul {
 
 model PlanetStats {
     id          Int      @id @default(autoincrement())
-
     oxygen      Float    @default(0)
     climate     Float    @default(5)
     water       Float    @default(0)
     biomass     Float    @default(0)
-    tir         Float    @default(0)
+    tir         Float    @default(5)
     stage       Int      @default(1)
-
     population  Int      @default(0)
     year        Int      @default(0)
     month       Int      @default(1)
