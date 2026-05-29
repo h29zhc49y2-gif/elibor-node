@@ -444,6 +444,15 @@
     let liveEvents=[];
     let liveEventsMax=50;
     function detectBrowserLang(){const nav=navigator.language||navigator.userLanguage;return nav.startsWith('zh')?'cn':'en'}
+    function formatTimeAgo(ts,cn){
+        const diff=Date.now()-ts;
+        const mins=Math.floor(diff/60000);
+        const hours=Math.floor(diff/3600000);
+        if(mins<1)return cn?'刚刚':'Just now';
+        if(mins<60)return cn?mins+'分钟前':mins+' mins ago';
+        if(hours<24)return cn?hours+'小时前':hours+' hours ago';
+        return cn?Math.floor(hours/24)+'天前':Math.floor(hours/24)+' days ago';
+    }
     function initSocket(){
         if(socket)return;
         socket=io(WS_BASE,{ transports:['websocket','polling'] });
