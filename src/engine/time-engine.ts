@@ -114,7 +114,9 @@ export class TimeEngine {
         const now = Date.now();
         const realMinutesPassed = (now - lastTickTime) / 60000;
 
-        const planetMinutesPassed = realMinutesPassed * 10;
+        const maxRealMinutesPassed = 10;
+        const clampedRealMinutes = Math.min(realMinutesPassed, maxRealMinutesPassed);
+        const planetMinutesPassed = clampedRealMinutes * 10;
 
         let totalMinutes = stats.hour * 60 + planetMinutesPassed;
         let newHour = Math.floor(totalMinutes / 60) % 24;
