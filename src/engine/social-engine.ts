@@ -1,5 +1,6 @@
 import { PrismaClient, Soul } from '@prisma/client';
 import logger from '../lib/logger.js';
+import { ContentEngine, EngineEvent } from './content-engine.js';
 
 export type RelationType = 'stranger' | 'colleague' | 'friend' | 'rival' | 'family' | 'mentor';
 export type InteractionType = 'conversation' | 'cooperation' | 'conflict' | 'gift' | 'betrayal' | 'gossip' | 'trade';
@@ -26,9 +27,11 @@ const INTERACTION_EFFECTS: Record<InteractionType, { trust: number; intimacy: nu
 
 export class SocialEngine {
     private prisma: PrismaClient;
+    private contentEngine: ContentEngine;
 
     constructor(prisma: PrismaClient) {
         this.prisma = prisma;
+        this.contentEngine = new ContentEngine(prisma);
     }
 
     async processSocialInteraction(
@@ -37,9 +40,12 @@ export class SocialEngine {
         type: InteractionType
     ): Promise<void> {
         const effects = INTERACTION_EFFECTS[type];
-        
+
         await this.updateRelation(soulAId, soulBId, effects.trust, effects.intimacy);
-        
+
+        const soulAName = await this.getSoulName(soulAId);
+        const soulBName = await this.getSoulName(soulBId);
+
         await this.prisma.socialInteraction.create({
             data: {
                 soulAId,
@@ -49,7 +55,29 @@ export class SocialEngine {
             },
         });
 
-        logger.info(`[Social] Interaction: ${soulAId} <-> ${soulBId} (${type})`);
+        const event: EngineEvent = {
+            source: 'social',
+            type: type,
+            timestamp: new Date(),
+            urgency: type === 'conflict' || type === 'betrayal' ? 'medium' : 'low',
+            data: {
+                soulAId,
+                soulBId,
+                soulAName,
+                soulBName,
+                interactionType: type,
+                trustChange: effects.trust,
+            },
+        };
+
+        await this.contentEngine.receive(event);
+
+        logger.info(`[Social] Interaction: ${soulAName} <-> ${soulBName} (${type})`);
+    }
+
+    private async getSoulName(soulId: number): Promise<string> {
+        const soul = await this.prisma.soul.findUnique({ where: { id: soulId } });
+        return soul?.name || 'Unknown';
     }
 
     async updateRelation(

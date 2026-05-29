@@ -423,7 +423,63 @@ export class ContentEngine {
             urgency: 'high',
             conditions: {}
         });
-        
+
+        this.templates.set('social:conversation', {
+            source: 'social',
+            type: 'conversation',
+            templateCn: '{soulAName}与{soulBName}交谈着',
+            templateEn: '{soulAName} is chatting with {soulBName}',
+            variantsCn: [
+                '{soulAName}与{soulBName}交谈着',
+                '{soulAName}和老友{soulBName}重逢，聊起往事',
+                '{soulAName}与他人分享今天的见闻'
+            ],
+            variantsEn: [
+                '{soulAName} is chatting with {soulBName}',
+                'Old friends meet again as {soulAName} shares memories with {soulBName}',
+                '{soulAName} shares today\'s observations with others'
+            ],
+            icon: 'message-circle',
+            urgency: 'low',
+            conditions: {}
+        });
+
+        this.templates.set('social:cooperation', {
+            source: 'social',
+            type: 'cooperation',
+            templateCn: '{soulAName}与{soulBName}合作完成任务',
+            templateEn: '{soulAName} cooperates with {soulBName} on a task',
+            variantsCn: [
+                '{soulAName}与{soulBName}合作完成任务',
+                '两人默契配合，效率翻倍'
+            ],
+            variantsEn: [
+                '{soulAName} cooperates with {soulBName} on a task',
+                'Working together, efficiency doubles'
+            ],
+            icon: 'users',
+            urgency: 'low',
+            conditions: {}
+        });
+
+        this.templates.set('social:conflict', {
+            source: 'social',
+            type: 'conflict',
+            templateCn: '{soulAName}与{soulBName}发生了争执',
+            templateEn: '{soulAName} and {soulBName} had a conflict',
+            variantsCn: [
+                '{soulAName}与{soulBName}发生了争执',
+                '气氛有些紧张，两人各执己见'
+            ],
+            variantsEn: [
+                '{soulAName} and {soulBName} had a conflict',
+                'The atmosphere is tense, both stand their ground'
+            ],
+            icon: 'alert-circle',
+            urgency: 'medium',
+            conditions: {}
+        });
+
         this.dialogueTemplates.set('working', [
             { category: 'working', contentCn: '"今天的矿石真不少，干完这块就能休息了。"', contentEn: '"The ore today is plenty. Finish this block and I can rest."', probability: 0.3 },
             { category: 'working', contentCn: '"这台钻机声音真响，但习惯了就好。"', contentEn: '"This drill is loud, but you get used to it."', probability: 0.3 },
