@@ -416,8 +416,8 @@ export class ContentEngine {
             return this.generateFallback(event);
         }
         
-        const cnText = this.selectVariant(template.variantsCn, template.templateCn);
-        const enText = this.selectVariant(template.variantsEn, template.templateEn);
+        const cnText = this.selectVariant(template.variantsCn || [], template.templateCn);
+        const enText = this.selectVariant(template.variantsEn || [], template.templateEn);
         
         let planetTime = event.planetTime;
         if (!planetTime) {
@@ -532,7 +532,7 @@ export class ContentEngine {
             return null;
         }
         
-        const eligible = templates.filter(t => Math.random() < t.probability);
+        const eligible = templates.filter(t => Math.random() < (t.probability || 0.5));
         if (eligible.length === 0) {
             return null;
         }
