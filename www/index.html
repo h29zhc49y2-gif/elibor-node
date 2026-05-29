@@ -366,8 +366,8 @@
     </div></div>
     <div class="toast" id="toast"></div>
     <script>
-    const API_BASE='https://elibor-node-production.up.railway.app/api';
-    const WS_BASE='https://elibor-node-production.up.railway.app';
+    const API_BASE='https://hfqixhke.up.railway.app/api';
+    const WS_BASE='https://hfqixhke.up.railway.app';
     let token=localStorage.getItem('elibor_token');
     let userData={};
     let souls=[];
@@ -398,8 +398,11 @@
         }
         tEl.innerHTML=liveEvents.slice(0,20).map(e=>{
             const time=formatTimeAgo(e.timestamp,cn);
-            return'<div class="timeline-item"><div class="timeline-content">'+(cn?e.message_cn:e.message)+'</div><div class="timeline-time">'+time+'</div></div>';
+            return '<div class="timeline-item"><div class="timeline-content">'+(cn?e.message_cn:e.message)+'</div><div class="timeline-time">'+time+'</div></div>';
         }).join('');
+        
+        // 同时更新栖人卡片里的实时动态
+        renderSouls();
     }
     function formatTimeAgo(ts,cn){
         const diff=Date.now()-ts;
@@ -642,12 +645,15 @@
         const genderLabels=cn?genderMap_cn:genderMap;
         const statusText=cn?statusLabels_cn:statusLabels;
         let html=souls.map(s=>{
-            const timelineItems=[
-                {content:(cn?s.name+'正在工作中':'Soul '+s.name+' is working'),time:cn?'刚刚':'Just now'},
-                {content:(cn?s.name+'的饱食度下降了5点':'Soul '+s.name+' hunger -5'),time:cn?'2分钟前':'2 mins ago'},
-                {content:(cn?s.name+'完成了今日学习':'Soul '+s.name+' finished daily learning'),time:cn?'5分钟前':'5 mins ago'},
-                {content:(cn?s.name+'与其他栖人进行了社交':'Soul '+s.name+' socialized'),time:cn?'10分钟前':'10 mins ago'}
-            ];
+            // 获取这个栖人的专属实时动态（如果有）
+            const soulSpecificEvents=liveEvents.filter(e=>e.soulName===s.name);
+            // 如果没有专属事件，显示全局最新的几个，或者默认占位
+            const displayEvents=soulSpecificEvents.length>0?soulSpecificEvents.slice(0,4):
+                                 liveEvents.length>0?liveEvents.slice(0,4):
+                                 [
+                                     {content:(cn?s.name+'正在等待中':'Soul '+s.name+' is waiting'),time:cn?'刚刚':'Just now'},
+                                     {content:(cn?s.name+'在思考人生':'Soul '+s.name+' is thinking'),time:cn?'2分钟前':'2 mins ago'}
+                                 ];
             return '<div class="soul-card" onclick="openSoul(\''+s.id+'\')">\
                 <div class="soul-card-main">\
                     <div class="soul-card-left">\
@@ -673,7 +679,7 @@
                     </div>\
                     <div class="soul-card-right">\
                         <div style="font-size:13px;color:var(--text-secondary);margin-bottom:12px;display:flex;align-items:center;gap:6px;"><svg viewBox="0 0 24 24" fill="none" stroke="var(--neon-cyan)" stroke-width="2" width="16" height="16"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>'+(cn?'实时动态':'Activity')+'</div>\
-                        <div class="timeline-mini">'+timelineItems.map(item=>'<div class="timeline-mini-item"><div><div class="timeline-mini-content">'+item.content+'</div><div class="timeline-mini-time">'+item.time+'</div></div></div>').join('')+'</div>\
+                        <div class="timeline-mini">'+displayEvents.map(e=>{ const time=e.timestamp?formatTimeAgo(e.timestamp,cn):e.time; const content=e.message? (cn?e.message_cn:e.message) : e.content; return '<div class="timeline-mini-item"><div><div class="timeline-mini-content">'+content+'</div><div class="timeline-mini-time">'+time+'</div></div></div>'; }).join('')+'</div>\
                     </div>\
                 </div>\
                 <div class="soul-upgrade-section">\
@@ -704,7 +710,8 @@
         total=Math.round(total/5);
         document.getElementById('planetOverall').textContent=total+'%';
         g.innerHTML=planetIndexes.map(p=>'<div class="planet-card"><div class="planet-icon '+p.key+'"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="'+p.icon+'"/></svg></div><div><h4>'+(cn?p.name_cn:p.name)+' Index</h4><div class="planet-value-row"><span class="planet-value">'+vals[p.key]+'%</span><div class="planet-bar"><div class="planet-bar-fill '+p.key+'" style="width:'+vals[p.key]+'%"></div></div></div></div>').join('');
-        document.getElementById('timeline').innerHTML='<div class="timeline-item"><div class="timeline-content">'+(cn?'栖人小明完成了采矿工作，产出50单位矿石':'Soul Xiao Ming finished mining, produced 50 minerals')+'</div><div class="timeline-time">'+(cn?'2分钟前':'2 mins ago')+'</div></div><div class="timeline-item"><div class="timeline-content">'+(cn?'工业指数突破30！':'Industry index exceeded 30!')+'</div><div class="timeline-time">'+(cn?'10分钟前':'10 mins ago')+'</div></div><div class="timeline-item"><div class="timeline-content">'+(cn?'新栖人小红加入了星球':'New soul Xiao Hong joined the planet')+'</div><div class="timeline-time">'+(cn?'30分钟前':'30 mins ago')+'</div></div>';
+        // 调用renderLiveFeed更新全局实时动态
+        renderLiveFeed();
     }
     function renderFacilities(){
         const g=document.getElementById('facilitiesGrid');
