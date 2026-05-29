@@ -309,6 +309,16 @@ export class ContentEngine {
             type: 'breakthrough',
             templateCn: '里程碑达成！{stage_name}',
             templateEn: 'Milestone! {stage_name}',
+            variantsCn: [
+                '里程碑达成！{stage_name}',
+                '{stage_name}已解锁',
+                '新的篇章开始了：{stage_name}'
+            ],
+            variantsEn: [
+                'Milestone! {stage_name}',
+                '{stage_name} has been unlocked',
+                'A new chapter begins: {stage_name}'
+            ],
             icon: 'trophy',
             urgency: 'high',
             conditions: {}

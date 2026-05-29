@@ -3,8 +3,8 @@ export interface ContentTemplate {
     type: string;
     templateCn: string;
     templateEn: string;
-    variantsCn?: string[];
-    variantsEn?: string[];
+    variantsCn: string[];
+    variantsEn: string[];
     icon: string;
     urgency?: 'low' | 'medium' | 'high';
     conditions?: Record<string, any>;
