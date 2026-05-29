@@ -529,7 +529,7 @@
         socket.on('connect',()=>{ if(token&&userData.id)socket.emit('join','user_'+userData.id); });
         socket.on('new_event',(event)=>{
             const ts=event.timestamp||Date.now();
-            if(event.soulId||event.soulName||event.soulName){
+            if(event.type==='soul'){
                 liveEvents.push({...event,timestamp:ts});
                 if(liveEvents.length>liveEventsMax){
                     liveEvents.shift();

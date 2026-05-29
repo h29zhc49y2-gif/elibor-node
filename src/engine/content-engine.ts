@@ -387,15 +387,15 @@ export class ContentEngine {
     
     private isCoolingDown(key: string, source: string): boolean {
         const cooldownTimes: Record<string, number> = {
-            behavior: 60,
-            weather: 3600,
-            meteor: 0,
-            facility: 300,
-            stage: 0,
-            social: 120,
-            monument: 0,
-            drive: 300,
-            emotion: 300,
+            behavior: 30,     // 行为冷却30秒
+            weather: 600,     // 天气10分钟
+            meteor: 0,        // 陨石无冷却
+            facility: 60,     // 设施1分钟
+            stage: 0,         // 阶段无冷却
+            social: 30,      // 社交30秒
+            monument: 0,     // 纪念碑无冷却
+            drive: 60,        // 驱动力1分钟
+            emotion: 60,      // 情绪1分钟
         };
         
         const cooldown = cooldownTimes[source] || 60;
@@ -470,7 +470,7 @@ export class ContentEngine {
             soulName: event.soulName,
             soulId: event.soulId,
             icon: 'activity',
-            message: cnText.en,
+            message: cnText.cn,
             messageEn: cnText.en,
             planetTime: event.planetTime,
             urgency: event.urgency,
