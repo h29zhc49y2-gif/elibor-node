@@ -155,3 +155,35 @@ model AdView {
     createdAt     DateTime @default(now())
     user          User     @relation(fields: [userId], references: [id])
 }
+
+model FeedContent {
+    id          Int       @id @default(autoincrement())
+    
+    type        String    // soul, planet
+    source      String    // behavior, weather, meteor, stage, social, monument
+    
+    soulId      Int?
+    soulName    String?
+    
+    messageCn   String
+    messageEn  String
+    
+    icon        String
+    
+    urgency     String    @default("low")  // low, medium, high
+    
+    planetTime  Json?
+    
+    rawEvent    Json     @default("{}")
+    
+    llmEnhanced Boolean   @default(false)
+    llmEnhance  String?
+    
+    metadata    Json      @default("{}")
+    
+    timestamp   DateTime  @default(now())
+    
+    @@index([type, timestamp])
+    @@index([soulId, timestamp])
+    @@index([urgency, timestamp])
+}
