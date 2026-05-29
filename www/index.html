@@ -10,7 +10,7 @@
         *{margin:0;padding:0;box-sizing:border-box}
         :root{--bg-deep:#050508;--bg-dark:#0a0e17;--bg-card:#0d1117;--bg-input:#161b22;--neon-cyan:#00d4ff;--neon-purple:#8b5cf6;--neon-green:#00ff88;--neon-amber:#ffaa00;--neon-red:#ff4757;--text-primary:#f0f6fc;--text-secondary:#8b949e;--text-muted:#484f58;--radius:12px;--radius-lg:20px}
         body{font-family:'Noto Sans SC',sans-serif;background:var(--bg-deep);color:var(--text-primary);min-height:100vh}
-        ::-webkit-scrollbar{width:6px}::--webkit-scrollbar-track{background:var(--bg-dark)}::--webkit-scrollbar-thumb{background:var(--text-muted);border-radius:3px}
+        ::-webkit-scrollbar{width:6px}::-webkit-scrollbar-track{background:var(--bg-dark)}::-webkit-scrollbar-thumb{background:var(--text-muted);border-radius:3px}
         .login-page{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;background:var(--bg-deep);z-index:1000;transition:opacity .5s,visibility .5s}
         .login-page.hidden{opacity:0;visibility:hidden;pointer-events:none}
         .login-bg{position:absolute;inset:0;overflow:hidden}
@@ -68,37 +68,68 @@
         .page-title svg{color:var(--neon-cyan);width:24px;height:24px}
         .page-subtitle{font-size:14px;color:var(--text-secondary)}
         .page{display:none}.page.active{display:block}
-        .souls-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:20px}
-        .soul-card{background:var(--bg-card);border:1px solid rgba(255,255,255,.08);border-radius:var(--radius-lg);padding:22px;cursor:pointer;transition:all .3s}
-        .soul-card:hover{transform:translateY(-4px);border-color:rgba(0,212,255,.3);box-shadow:0 8px 30px rgba(0,0,0,.4)}
-        .soul-card-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:18px}
-        .soul-avatar{width:64px;height:64px;border-radius:50%;background:linear-gradient(135deg,var(--neon-cyan),var(--neon-purple));display:flex;align-items:center;justify-content:center;font-size:24px;font-weight:700;color:#000;position:relative}
-        .soul-avatar::after{content:'';position:absolute;inset:-4px;border-radius:50%;background:linear-gradient(135deg,var(--neon-cyan),var(--neon-purple));opacity:.2;z-index:-1}
-        .status-dot{position:absolute;bottom:2px;right:2px;width:14px;height:14px;border-radius:50%;background:var(--neon-green);border:3px solid var(--bg-card)}
-        .status-dot.working{background:var(--neon-cyan)}
-        .status-dot.resting{background:var(--text-muted)}
-        .status-dot.dead{background:var(--neon-red)}
+
+        .souls-grid{display:flex;flex-direction:column;gap:20px}
+        .soul-card{background:var(--bg-card);border:1px solid rgba(255,255,255,.08);border-radius:var(--radius-lg);overflow:hidden;transition:all .4s;position:relative}
+        .soul-card::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(0,212,255,.03),transparent);opacity:0;transition:opacity .4s}
+        .soul-card:hover{border-color:rgba(0,212,255,.4);box-shadow:0 12px 40px rgba(0,0,0,.5),0 0 30px rgba(0,212,255,.1);transform:translateY(-2px)}
+        .soul-card:hover::before{opacity:1}
+        .soul-card-main{display:flex}
+        .soul-card-left{width:380px;border-right:1px solid rgba(255,255,255,.06);padding:22px}
+        .soul-card-right{flex:1;padding:22px;min-width:400px}
+        .soul-avatar-wrapper{position:relative;width:110px;height:110px;margin-bottom:18px}
+        .soul-avatar{width:100%;height:100%;border-radius:10px;background:linear-gradient(135deg,var(--neon-cyan),var(--neon-purple));display:flex;align-items:center;justify-content:center;font-size:36px;font-weight:700;color:#000;box-shadow:0 4px 20px rgba(0,212,255,.3),inset 0 2px 4px rgba(255,255,255,.2);border:2px solid rgba(255,255,255,.1)}
+        .status-icon{position:absolute;width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:var(--bg-card);border:2px solid var(--bg-card);box-shadow:0 2px 8px rgba(0,0,0,.3)}
+        .status-icon svg{width:14px;height:14px}
+        .status-icon.action{top:-5px;left:-5px;color:var(--neon-cyan);box-shadow:0 0 12px rgba(0,212,255,.5),0 2px 8px rgba(0,0,0,.3)}
+        .status-icon.emotion{top:-5px;right:-5px;color:var(--neon-purple);box-shadow:0 0 12px rgba(139,92,246,.5),0 2px 8px rgba(0,0,0,.3)}
+        .soul-info{margin-bottom:20px}
+        .soul-name{font-size:20px;font-weight:600;margin-bottom:4px}
+        .soul-detail{font-size:13px;color:var(--text-secondary)}
+        .soul-bars{display:flex;flex-direction:column;gap:13px}
+        .bar-row{display:flex;align-items:center;gap:14px}
+        .bar-label{width:52px;font-size:12px;color:var(--text-muted);font-weight:500}
+        .bar-track{flex:1;height:8px;background:var(--bg-input);border-radius:4px;overflow:hidden;position:relative}
+        .bar-track::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.1),transparent);animation:shimmer 2s infinite}
+        @keyframes shimmer{0%{transform:translateX(-100%)}100%{transform:translateX(100%)}}
+        .bar-fill{height:100%;border-radius:4px;transition:width .6s ease-out;position:relative}
+        .bar-fill::before{content:'';position:absolute;top:0;left:0;right:0;height:50%;background:linear-gradient(180deg,rgba(255,255,255,.2),transparent);border-radius:4px 4px 0 0}
+        .bar-fill.hunger{background:linear-gradient(90deg,#ea580c,#fb923c);box-shadow:0 0 10px rgba(234,88,12,.4)}
+        .bar-fill.energy{background:linear-gradient(90deg,var(--neon-cyan),#22d3ee);box-shadow:0 0 10px rgba(0,212,255,.4)}
+        .bar-fill.emotion{background:linear-gradient(90deg,var(--neon-purple),#c084fc);box-shadow:0 0 10px rgba(139,92,246,.4)}
+        .bar-fill.social{background:linear-gradient(90deg,#059669,#34d399);box-shadow:0 0 10px rgba(5,150,105,.4)}
+        .bar-fill.learning{background:linear-gradient(90deg,#7c3aed,#c084fc);box-shadow:0 0 10px rgba(124,58,237,.4)}
+        .bar-value{width:38px;font-size:12px;color:var(--text-secondary);text-align:right;font-weight:600}
+        .timeline-mini{height:100%;display:flex;flex-direction:column;gap:12px;overflow-y:auto;max-height:280px}
+        .timeline-mini-item{display:flex;gap:10px;padding-left:16px;position:relative;padding-bottom:12px;border-bottom:1px solid rgba(255,255,255,.04)}
+        .timeline-mini-item:last-child{border-bottom:none;padding-bottom:0}
+        .timeline-mini-item::before{content:'';position:absolute;left:0;top:4px;width:6px;height:6px;border-radius:50%;background:var(--neon-cyan)}
+        .timeline-mini-content{font-size:13px;color:var(--text-primary);margin-bottom:4px}
+        .timeline-mini-time{font-size:11px;color:var(--text-muted)}
+        .soul-upgrade-section{border-top:1px solid rgba(255,255,255,.06);padding:22px;background:linear-gradient(180deg,transparent,rgba(0,0,0,.1))}
+        .upgrade-card{display:flex;align-items:center;gap:16px;padding:18px;background:rgba(255,170,0,.04);border:1px solid rgba(255,170,0,.15);border-radius:var(--radius);margin-bottom:12px;transition:all .3s;position:relative}
+        .upgrade-card::before{content:'';position:absolute;inset:0;border-radius:var(--radius);background:linear-gradient(135deg,rgba(255,170,0,.05),transparent);opacity:0;transition:opacity .3s}
+        .upgrade-card:hover{background:rgba(255,170,0,.07);border-color:rgba(255,170,0,.3);transform:translateX(4px)}
+        .upgrade-card:hover::before{opacity:1}
+        .upgrade-card:last-child{margin-bottom:0}
+        .upgrade-icon{width:44px;height:44px;border-radius:var(--radius);display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,rgba(255,170,0,.2),rgba(255,170,0,.1));color:var(--neon-amber);box-shadow:0 4px 12px rgba(255,170,0,.2)}
+        .upgrade-icon svg{width:22px;height:22px}
+        .upgrade-info{flex:1}
+        .upgrade-title{font-size:14px;font-weight:600;margin-bottom:3px;color:var(--text-primary)}
+        .upgrade-desc{font-size:12px;color:var(--text-secondary)}
+        .upgrade-btn{padding:9px 18px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;transition:all .3s;box-shadow:0 4px 12px rgba(0,0,0,.2)}
+        .upgrade-btn.pro{background:linear-gradient(135deg,var(--neon-green),#10b981);color:#000}
+        .upgrade-btn.pro:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,255,136,.4)}
+        .upgrade-btn.max{background:linear-gradient(135deg,var(--neon-amber),#d97706);color:#000}
+        .upgrade-btn.max:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(255,170,0,.4)}
+
         .stage-badge{padding:4px 10px;border-radius:20px;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:1px}
         .stage-badge.child{background:rgba(59,130,246,.2);color:#60a5fa}
         .stage-badge.youth{background:rgba(16,185,129,.2);color:#34d399}
         .stage-badge.adult{background:rgba(139,92,246,.2);color:#a78bfa}
         .stage-badge.elder{background:rgba(245,158,11,.2);color:#fbbf24}
         .stage-badge.senior{background:rgba(239,68,68,.2);color:#f87171}
-        .soul-name{font-size:18px;font-weight:600;margin-bottom:6px}
-        .soul-meta{display:flex;gap:14px;font-size:12px;color:var(--text-secondary);margin-bottom:14px}
-        .soul-meta span{display:flex;align-items:center;gap:4px}
-        .soul-status{display:flex;align-items:center;gap:8px;padding:8px 12px;background:rgba(0,212,255,.08);border-radius:20px;font-size:12px;color:var(--neon-cyan);margin-bottom:16px}
-        .soul-status svg{width:14px;height:14px}
-        .soul-bars{display:flex;flex-direction:column;gap:10px}
-        .bar-row{display:flex;align-items:center;gap:10px}
-        .bar-label{width:50px;font-size:11px;color:var(--text-muted)}
-        .bar-track{flex:1;height:5px;background:var(--bg-input);border-radius:3px;overflow:hidden}
-        .bar-fill{height:100%;border-radius:3px;transition:width .5s}
-        .bar-fill.hunger{background:linear-gradient(90deg,#f97316,#fb923c)}
-        .bar-fill.energy{background:linear-gradient(90deg,var(--neon-cyan),#22d3ee)}
-        .bar-fill.emotion{background:linear-gradient(90deg,var(--neon-purple),#c084fc)}
-        .bar-value{width:34px;font-size:11px;color:var(--text-secondary);text-align:right}
-        .add-soul-card{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;background:rgba(0,212,255,.03);border:2px dashed rgba(0,212,255,.2);border-radius:var(--radius-lg);padding:40px;cursor:pointer;transition:all .3s;min-height:260px}
+        .add-soul-card{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;background:rgba(0,212,255,.03);border:2px dashed rgba(0,212,255,.2);border-radius:var(--radius-lg);padding:40px;cursor:pointer;transition:all .3s;min-height:120px}
         .add-soul-card:hover{border-color:var(--neon-cyan);background:rgba(0,212,255,.08)}
         .add-soul-icon{width:52px;height:52px;display:flex;align-items:center;justify-content:center;background:rgba(0,212,255,.1);border-radius:50%;color:var(--neon-cyan)}
         .add-soul-icon svg{width:24px;height:24px}
@@ -110,7 +141,7 @@
         .modal-overlay.active .modal{transform:translateY(0)}
         .modal-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:24px;padding-bottom:20px;border-bottom:1px solid rgba(255,255,255,.06)}
         .modal-title{display:flex;align-items:center;gap:14px}
-        .modal-avatar{width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,var(--neon-cyan),var(--neon-purple));display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:700;color:#000}
+        .modal-avatar{width:56px;height:56px;border-radius:8px;background:linear-gradient(135deg,var(--neon-cyan),var(--neon-purple));display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:700;color:#000}
         .modal-title-info h2{font-size:20px;margin-bottom:6px}
         .modal-tags{display:flex;gap:8px}
         .modal-tag{padding:4px 10px;background:var(--bg-input);border-radius:20px;font-size:11px;color:var(--text-secondary)}
@@ -121,12 +152,9 @@
         .section-title svg{width:16px;height:16px;color:var(--neon-cyan)}
         .status-bars-detail{display:flex;flex-direction:column;gap:14px}
         .status-bar-item{display:flex;align-items:center;gap:14px}
-        .status-bar-label{width:60px;font-size:12px;color:var(--text-secondary);display:flex;align-items:center;gap:6px}
-        .status-bar-label svg{width:14px;height:14px}
+        .status-bar-label{width:60px;font-size:12px;color:var(--text-secondary)}
         .status-bar-track{flex:1;height:8px;background:var(--bg-input);border-radius:4px;overflow:hidden}
         .status-bar-fill{height:100%;border-radius:4px;transition:width .5s}
-        .status-bar-fill.social{background:linear-gradient(90deg,var(--neon-purple),#c084fc)}
-        .status-bar-fill.learning{background:linear-gradient(90deg,#10b981,#34d399)}
         .status-bar-value{width:40px;font-size:13px;font-weight:600;text-align:right}
         .intervention-hint{font-size:13px;color:var(--text-secondary);margin-bottom:14px}
         .intervention-hint strong{color:var(--neon-cyan);font-size:16px}
@@ -210,7 +238,7 @@
         .rank-badge.silver{background:linear-gradient(135deg,#9ca3af,#6b7280);color:#000}
         .rank-badge.bronze{background:linear-gradient(135deg,#d97706,#b45309);color:#fff}
         .rank-soul{display:flex;align-items:center;gap:12px}
-        .rank-avatar{width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,var(--neon-cyan),var(--neon-purple));display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#000}
+        .rank-avatar{width:36px;height:36px;border-radius:8px;background:linear-gradient(135deg,var(--neon-cyan),var(--neon-purple));display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#000}
         .contribution-value{color:var(--neon-cyan);font-weight:600}
         .subscribe-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
         .plan-card{background:var(--bg-input);border:1px solid rgba(255,255,255,.08);border-radius:var(--radius);padding:20px;text-align:center;position:relative}
@@ -229,7 +257,7 @@
         .toast.show{transform:translateX(-50%) translateY(0);opacity:1}
         .toast.success{border-color:var(--neon-green);color:var(--neon-green)}
         .toast.error{border-color:var(--neon-red);color:var(--neon-red)}
-        @media(max-width:768px){.header{padding:12px 16px}.header-nav{display:none}.main-content{padding:20px 16px}.souls-grid{grid-template-columns:1fr}.subscribe-grid{grid-template-columns:1fr}.ranking-header,.ranking-row{grid-template-columns:50px 1fr}.ranking-header span:nth-child(3),.ranking-header span:nth-child(4),.ranking-header span:nth-child(5),.ranking-row span:nth-child(3),.ranking-row span:nth-child(4),.ranking-row span:nth-child(5){display:none}}
+        @media(max-width:768px){.header{padding:12px 16px}.header-nav{display:none}.main-content{padding:20px 16px}.soul-card-main{flex-direction:column}.soul-card-left{width:100%;border-right:none;border-bottom:1px solid rgba(255,255,255,.06)}.soul-card-right{min-width:100%}.subscribe-grid{grid-template-columns:1fr}.ranking-header,.ranking-row{grid-template-columns:50px 1fr}.ranking-header span:nth-child(3),.ranking-header span:nth-child(4),.ranking-header span:nth-child(5),.ranking-row span:nth-child(3),.ranking-row span:nth-child(4),.ranking-row span:nth-child(5){display:none}}
     </style>
 </head>
 <body>
@@ -247,93 +275,93 @@
                     <circle cx="70" cy="50" r="2" fill="#8b5cf6" opacity="0.6"><animate attributeName="opacity" values="0.6;1;0.6" dur="2.5s" repeatCount="indefinite"/></circle>
                 </svg>
                 <h1>ELIBOR</h1>
-                <p>聚 · 栖 · 计 · 划</p>
+                <p>JU QI PLAN</p>
             </div>
             <form class="login-form" id="loginForm">
-                <div class="input-group"><label>邮箱</label><input type="email" class="input-field" id="loginEmail" placeholder="your@email.com" required></div>
-                <div class="input-group"><label>密码</label><input type="password" class="input-field" id="loginPassword" placeholder="••••••••" required></div>
-                <button type="button" class="btn-primary" onclick="login()">登 录</button>
+                <div class="input-group"><label>Email</label><input type="email" class="input-field" id="loginEmail" placeholder="your@email.com" required></div>
+                <div class="input-group"><label>Password</label><input type="password" class="input-field" id="loginPassword" placeholder="••••••••" required></div>
+                <button type="button" class="btn-primary" onclick="login()">LOGIN</button>
                 <div id="loginMsg" class="login-msg" style="display:none"></div>
             </form>
-            <div class="login-links"><a href="javascript:void(0)" onclick="showRegister()">注册账号</a><a href="javascript:void(0)" onclick="showForgotPassword()">忘记密码</a></div>
+            <div class="login-links"><a href="javascript:void(0)" onclick="showRegister()">Register</a><a href="javascript:void(0)" onclick="showForgotPassword()">Forgot Password</a></div>
         </div>
     </div>
     <div class="app" id="mainApp">
         <header class="header">
             <div class="header-brand">
                 <svg viewBox="0 0 100 100" fill="none"><defs><linearGradient id="hg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#00d4ff"/><stop offset="100%" style="stop-color:#8b5cf6"/></linearGradient></defs><circle cx="50" cy="50" r="40" stroke="url(#hg)" stroke-width="2"/><circle cx="50" cy="30" r="5" fill="url(#hg)"/></svg>
-                <span>聚栖</span>
+                <span>Elibor</span>
             </div>
             <nav class="header-nav">
-                <button class="nav-btn active" data-page="souls"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg><span>我的栖人</span></button>
-                <button class="nav-btn" data-page="planet"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg><span>星球实况</span></button>
-                <button class="nav-btn" data-page="resources"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg><span>资源</span></button>
-                <button class="nav-btn" data-page="facilities"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="2" width="16" height="20" rx="2" ry="2"/><path d="M9 22v-4h6v4"/></svg><span>设施</span></button>
-                <button class="nav-btn" data-page="monuments"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="2" x2="12" y2="6"/><path d="M12 22v-8"/><path d="M12 14l-4 0"/><path d="M12 14l4 0"/></svg><span>纪念碑</span></button>
+                <button class="nav-btn active" data-page="souls"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg><span>Souls</span></button>
+                <button class="nav-btn" data-page="planet"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg><span>Planet</span></button>
+                <button class="nav-btn" data-page="resources"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg><span>Resources</span></button>
+                <button class="nav-btn" data-page="facilities"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="2" width="16" height="20" rx="2" ry="2"/><path d="M9 22v-4h6v4"/></svg><span>Facilities</span></button>
+                <button class="nav-btn" data-page="monuments"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="2" x2="12" y2="6"/><path d="M12 22v-8"/><path d="M12 14l-4 0"/><path d="M12 14l4 0"/></svg><span>Monuments</span></button>
             </nav>
             <div class="header-right">
                 <div class="stat-chip credits"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v12"/><path d="M8 10h8"/><path d="M8 14h8"/></svg><span id="userCredits">0</span></div>
                 <div class="stat-chip actions" id="actionsChip"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg><span id="userActions">0/0</span></div>
-                <span class="plan-badge" id="planBadge">免费版</span>
-                <button class="btn-upgrade" onclick="showSubscribe()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>升级</button>
+                <span class="plan-badge" id="planBadge">Free</span>
+                <button class="btn-upgrade" onclick="showSubscribe()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>Upgrade</button>
                 <button class="btn-logout" onclick="logout()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg></button>
-                <button class="lang-toggle" onclick="toggleLang()" id="langToggle">EN</button>
+                <button class="lang-toggle" onclick="toggleLang()" id="langToggle">CN</button>
             </div>
         </header>
         <main class="main-content">
             <div class="page active" id="pageSouls">
                 <div class="page-header">
-                    <div><h1 class="page-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>我的栖人</h1><p class="page-subtitle">管理和引导你的栖人度过一生</p></div>
-                    <button class="btn-primary" style="max-width:180px" onclick="showCreateSoul()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>创造栖人</button>
+                    <div><h1 class="page-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>My Souls</h1><p class="page-subtitle">Manage and guide your souls through life</p></div>
+                    <button class="btn-primary" style="max-width:180px" onclick="showCreateSoul()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Create Soul</button>
                 </div>
                 <div class="souls-grid" id="soulsGrid"></div>
             </div>
             <div class="page" id="pagePlanet">
                 <div class="page-header planet-header">
-                    <div><h1 class="page-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/></svg>星球实况</h1><p class="page-subtitle">星球发展综合指标</p></div>
-                    <div class="planet-overall"><div class="planet-overall-label">综合指数</div><div class="planet-overall-value" id="planetOverall">0%</div></div>
+                    <div><h1 class="page-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/></svg>Planet Status</h1><p class="page-subtitle">Comprehensive planet development indicators</p></div>
+                    <div class="planet-overall"><div class="planet-overall-label">Overall Index</div><div class="planet-overall-value" id="planetOverall">0%</div></div>
                 </div>
                 <div class="planet-grid" id="planetGrid"></div>
-                <div class="timeline-card"><h3 class="timeline-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>实时动态</h3><div class="timeline" id="timeline"></div></div>
+                <div class="timeline-card"><h3 class="timeline-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Live Feed</h3><div class="timeline" id="timeline"></div></div>
             </div>
             <div class="page" id="pageResources">
-                <div class="page-header"><div><h1 class="page-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>资源管理</h1><p class="page-subtitle">查看和管理栖人的资源产出</p></div></div>
+                <div class="page-header"><div><h1 class="page-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>Resources</h1><p class="page-subtitle">View and manage soul resources</p></div></div>
                 <div class="soul-selector" id="soulSelector"></div>
                 <div class="resources-grid" id="resourcesGrid"></div>
             </div>
             <div class="page" id="pageFacilities">
-                <div class="page-header"><div><h1 class="page-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="2" width="16" height="20" rx="2" ry="2"/><path d="M9 22v-4h6v4"/></svg>设施建造</h1><p class="page-subtitle">建造和升级建筑设施</p></div></div>
+                <div class="page-header"><div><h1 class="page-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="2" width="16" height="20" rx="2" ry="2"/><path d="M9 22v-4h6v4"/></svg>Facilities</h1><p class="page-subtitle">Build and upgrade facilities</p></div></div>
                 <div class="facilities-grid" id="facilitiesGrid"></div>
             </div>
             <div class="page" id="pageMonuments">
-                <div class="page-header"><div><h1 class="page-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="2" x2="12" y2="6"/><path d="M12 22v-8"/><path d="M12 14l-4 0"/><path d="M12 14l4 0"/></svg>栖人纪念碑</h1><p class="page-subtitle">永远铭记为星球做出贡献的栖人</p></div></div>
-                <div class="ranking-table"><div class="ranking-header"><span>排名</span><span>栖人</span><span>职业</span><span>寿命</span><span>贡献值</span></div><div id="monumentsList"></div></div>
+                <div class="page-header"><div><h1 class="page-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="2" x2="12" y2="6"/><path d="M12 22v-8"/><path d="M12 14l-4 0"/><path d="M12 14l4 0"/></svg>Monuments</h1><p class="page-subtitle">Honor souls who contributed to the planet</p></div></div>
+                <div class="ranking-table"><div class="ranking-header"><span>Rank</span><span>Soul</span><span>Profession</span><span>Age</span><span>Contribution</span></div><div id="monumentsList"></div></div>
             </div>
         </main>
     </div>
     <div class="modal-overlay" id="soulModal"><div class="modal">
         <div class="modal-header">
-            <div class="modal-title"><div class="modal-avatar" id="modalAvatar">栖</div><div class="modal-title-info"><h2 id="modalName">栖人名称</h2><div class="modal-tags"><span class="modal-tag" id="modalStage">成年</span><span class="modal-tag" id="modalAge">26岁</span><span class="modal-tag" id="modalProfession">工程师</span></div></div></div>
+            <div class="modal-title"><div class="modal-avatar" id="modalAvatar">S</div><div class="modal-title-info"><h2 id="modalName">Soul Name</h2><div class="modal-tags"><span class="modal-tag" id="modalStage">Adult</span><span class="modal-tag" id="modalAge">26y</span><span class="modal-tag" id="modalProfession">Engineer</span></div></div></div>
             <button class="modal-close" onclick="closeSoulModal()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button>
         </div>
-        <div class="modal-section"><h3 class="section-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>当前状态</h3><div class="status-bars-detail" id="modalStatusBars"></div></div>
-        <div class="modal-section"><h3 class="section-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>干预行动</h3><p class="intervention-hint">剩余干预次数: <strong id="modalActions">0</strong> / <span id="modalMaxActions">0</span></p><div class="intervention-grid" id="interventionGrid"></div></div>
+        <div class="modal-section"><h3 class="section-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Status</h3><div class="status-bars-detail" id="modalStatusBars"></div></div>
+        <div class="modal-section"><h3 class="section-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>Interventions</h3><p class="intervention-hint">Remaining: <strong id="modalActions">0</strong> / <span id="modalMaxActions">0</span></p><div class="intervention-grid" id="interventionGrid"></div></div>
     </div></div>
     <div class="modal-overlay" id="subscribeModal"><div class="modal">
-        <div class="modal-header"><div class="modal-title"><svg viewBox="0 0 24 24" fill="none" stroke="var(--neon-amber)" stroke-width="2" width="24" height="24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg><h2>选择订阅方案</h2></div><button class="modal-close" onclick="closeSubscribe()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
+        <div class="modal-header"><div class="modal-title"><svg viewBox="0 0 24 24" fill="none" stroke="var(--neon-amber)" stroke-width="2" width="24" height="24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg><h2>Subscribe</h2></div><button class="modal-close" onclick="closeSubscribe()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
         <div class="subscribe-grid">
-            <div class="plan-card"><h3>Pro 月度</h3><div class="plan-price"><span class="plan-price-value">¥30</span><span class="plan-price-unit">/月</span></div><ul class="plan-features"><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>3个栖人</li><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>5次干预/天</li><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>50信用点/天</li></ul><button class="btn-subscribe" onclick="subscribe('pro_monthly')">立即订阅</button></div>
-            <div class="plan-card popular"><span class="plan-popular-badge">推荐</span><h3>Pro 年度</h3><div class="plan-price"><span class="plan-price-value">¥300</span><span class="plan-price-unit">/年</span></div><ul class="plan-features"><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>3个栖人</li><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>5次干预/天</li><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>50信用点/天</li></ul><button class="btn-subscribe" onclick="subscribe('pro_yearly')">立即订阅</button></div>
-            <div class="plan-card"><h3>MAX 月度</h3><div class="plan-price"><span class="plan-price-value">¥68</span><span class="plan-price-unit">/月</span></div><ul class="plan-features"><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>5个栖人</li><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>无限干预</li><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>200信用点/天</li></ul><button class="btn-subscribe" onclick="subscribe('max_monthly')">立即订阅</button></div>
-            <div class="plan-card"><h3>MAX 年度</h3><div class="plan-price"><span class="plan-price-value">¥680</span><span class="plan-price-unit">/年</span></div><ul class="plan-features"><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>5个栖人</li><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>无限干预</li><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>200信用点/天</li></ul><button class="btn-subscribe" onclick="subscribe('max_yearly')">立即订阅</button></div>
+            <div class="plan-card"><h3>Pro Monthly</h3><div class="plan-price"><span class="plan-price-value">$4.99</span><span class="plan-price-unit">/month</span></div><ul class="plan-features"><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>3 Souls</li><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>5 Interventions/day</li><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>50 Credits/day</li></ul><button class="btn-subscribe" onclick="subscribe('pro_monthly')">Subscribe</button></div>
+            <div class="plan-card popular"><span class="plan-popular-badge">Recommended</span><h3>Pro Yearly</h3><div class="plan-price"><span class="plan-price-value">$49.99</span><span class="plan-price-unit">/year</span></div><ul class="plan-features"><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>3 Souls</li><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>5 Interventions/day</li><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>50 Credits/day</li></ul><button class="btn-subscribe" onclick="subscribe('pro_yearly')">Subscribe</button></div>
+            <div class="plan-card"><h3>MAX Monthly</h3><div class="plan-price"><span class="plan-price-value">$9.99</span><span class="plan-price-unit">/month</span></div><ul class="plan-features"><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>5 Souls</li><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Unlimited Interventions</li><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>200 Credits/day</li></ul><button class="btn-subscribe" onclick="subscribe('max_monthly')">Subscribe</button></div>
+            <div class="plan-card"><h3>MAX Yearly</h3><div class="plan-price"><span class="plan-price-value">$99.99</span><span class="plan-price-unit">/year</span></div><ul class="plan-features"><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>5 Souls</li><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Unlimited Interventions</li><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>200 Credits/day</li></ul><button class="btn-subscribe" onclick="subscribe('max_yearly')">Subscribe</button></div>
         </div>
     </div></div>
     <div class="modal-overlay" id="createSoulModal"><div class="modal" style="max-width:400px">
-        <div class="modal-header"><div class="modal-title"><svg viewBox="0 0 24 24" fill="none" stroke="var(--neon-purple)" stroke-width="2" width="24" height="24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg><h2>创造新栖人</h2></div><button class="modal-close" onclick="closeCreateSoul()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
-        <p style="color:var(--text-secondary);font-size:13px;margin-bottom:20px">为你的栖人取一个名字，开启新的旅程</p>
-        <div class="input-group"><label>栖人名称</label><input type="text" class="input-field" id="newSoulName" placeholder="输入名称..." maxlength="20"></div>
-        <div style="display:flex;align-items:center;gap:8px;margin-bottom:20px;font-size:13px;color:var(--text-secondary)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><circle cx="12" cy="12" r="10"/><path d="M12 6v12"/><path d="M8 10h8"/><path d="M8 14h8"/></svg>消耗: <span style="color:var(--neon-amber);font-weight:600">100 信用点</span></div>
-        <button class="btn-primary" onclick="createSoul()" id="btnCreateSoul">创造栖人</button>
+        <div class="modal-header"><div class="modal-title"><svg viewBox="0 0 24 24" fill="none" stroke="var(--neon-purple)" stroke-width="2" width="24" height="24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg><h2>Create Soul</h2></div><button class="modal-close" onclick="closeCreateSoul()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
+        <p style="color:var(--text-secondary);font-size:13px;margin-bottom:20px">Give your soul a name to begin the journey</p>
+        <div class="input-group"><label>Soul Name</label><input type="text" class="input-field" id="newSoulName" placeholder="Enter name..." maxlength="20"></div>
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:20px;font-size:13px;color:var(--text-secondary)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><circle cx="12" cy="12" r="10"/><path d="M12 6v12"/><path d="M8 10h8"/><path d="M8 14h8"/></svg> Cost: <span style="color:var(--neon-amber);font-weight:600">100 Credits</span></div>
+        <button class="btn-primary" onclick="createSoul()" id="btnCreateSoul">Create</button>
     </div></div>
     <div class="toast" id="toast"></div>
     <script>
@@ -342,45 +370,316 @@
     let userData={};
     let souls=[];
     let selectedSoulId=null;
-    let currentLang=localStorage.getItem('lang')||'zh';
-    const i18n={zh:{},en:{}};
-    const stages={child:'儿童',youth:'青年',adult:'成年',elder:'老年',senior:'暮年'};
-    const stages_en={child:'Child',youth:'Youth',adult:'Adult',elder:'Elder',senior:'Senior'};
-    const professions={miner:'矿工',farmer:'农民',engineer:'工程师',scientist:'科学家',builder:'建筑工',energy_engineer:'能源工程师',teacher:'教师',doctor:'医生'};
-    const statusIcons={hunger:'utensils',energy:'battery-charging',emotion:'heart',social:'users',learning:'book-open'};
-    const statusLabels={hunger:'饱食',energy:'精力',emotion:'情绪',social:'社交',learning:'学习'};
-    const resourceIcons={minerals:'gem',food:'wheat',energy:'zap',materials:'hammer',research:'flask-conical'};
-    const resourceNames={minerals:'矿石',food:'食物',energy:'能源',materials:'材料',research:'研究点'};
-    const facilityIcons={mine:'pickaxe',farm:'leaf',power_plant:'zap',workshop:'hammer',lab:'flask-conical',hospital:'heart-pulse',school:'book-open',residence:'home'};
-    const actionIcons={idle:'circle-dot',working:'hammer',resting:'moon',socializing:'users',learning:'book-open',eating:'utensils',walking:'footprints',dead:'skull'};
-    const actionNames={idle:'空闲中',working:'工作中',resting:'休息中',socializing:'社交中',learning:'学习中',eating:'进食中',walking:'移动中',dead:'已故'};
-    const interventions=[{id:'feed',name:'喂食',icon:'utensils'},{id:'rest',name:'休息',icon:'moon'},{id:'work',name:'工作',icon:'hammer'},{id:'social',name:'社交',icon:'users'},{id:'learn',name:'学习',icon:'book-open'},{id:'exercise',name:'锻炼',icon:'dumbbell'}];
-    const planetIndexes=[{key:'industry',name:'工业',icon:'M2 20h20v-4H2v4zm2-6h2v2H4v-2zm0-4h2v2H4v-2zm0-4h2v2H4V6zm4-2h12v2H8V4zm0 8h12v2H8v-2zm0 4h12v2H8v-2zm0 4h12v2H8v-2z'},{key:'agriculture',name:'农业',icon:'M12 2L4 6v12l8 4 8-4V6l-8-4zm0 2.5L18 8l-6 3-6-3 6-3.5zM6 9.5l6 3v7l-6-3v-7zm12 0v7l-6 3v-7l6-3z'},{key:'housing',name:'居住',icon:'M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8h5z'},{key:'technology',name:'科技',icon:'M9 3v1H6v2h1v1H5V5h4V4H7V3h2zm4 1v1h2v2h-1v1h1v1h-1v1h-2v-1H9v-1h1v-1h-1V9h1V8h2zm5 0v6h-3v-2h-2v2h-3v-6h2v2h4V4z'},{key:'energy',name:'能源',icon:'M13 2L3 14h9l-1 8 10-12h-9l1-8z'}];
-    const facilityTypes=[{type:'mine',name:'采矿站',desc:'开采矿石资源',output:{minerals:5},cost:{minerals:100,materials:50}},{type:'farm',name:'农场',desc:'种植食物资源',output:{food:4},cost:{minerals:80,materials:40}},{type:'power_plant',name:'发电站',desc:'产生能源',output:{energy:6},cost:{minerals:120,materials:60}},{type:'workshop',name:'工坊',desc:'加工材料',output:{materials:3},cost:{minerals:100,materials:80}},{type:'lab',name:'研究实验室',desc:'产出研究点',output:{research:2},cost:{minerals:150,materials:100}},{type:'hospital',name:'医疗中心',desc:'恢复健康',output:{energy:3},cost:{minerals:130,materials:70}},{type:'school',name:'学校',desc:'提升学习',output:{research:1},cost:{minerals:90,materials:50}},{type:'residence',name:'居住区',desc:'提升社交',output:{social:5},cost:{minerals:60,materials:30}}];
-    function showToast(msg,type='success'){const t=document.getElementById('toast');t.textContent=msg;t.className='toast '+type+' show';setTimeout(()=>t.classList.remove('show'),3e3)}
-    async function api(path,opts={}){const h={'Content-Type':'application/json'};if(token)h['Authorization']='Bearer '+token;let url=path;if(!path.startsWith('http'))url=API_BASE+path;const r=await fetch(url,{...opts,headers:{...h,...opts.headers}});return r.json()}
-    function initParticles(){const c=document.getElementById('particles'),x=c.getContext('2d');let ps=[];function rs(){c.width=window.innerWidth;c.height=window.innerHeight};class P{constructor(){this.r()};r(){this.x=Math.random()*c.width;this.y=c.height+10;this.s=Math.random()*2+.5;this.sy=Math.random()*.5+.2;this.sx=(Math.random()-.5)*.3;this.o=Math.random()*.5+.1;this.c=Math.random()>.5?'#00d4ff':'#8b5cf6'};u(){this.y-=this.sy;this.x+=this.sx;this.o-=.002;if(this.y<-10||this.o<=0)this.r()};d(){x.beginPath();x.arc(this.x,this.y,this.s,0,Math.PI*2);x.fillStyle=this.c;x.globalAlpha=this.o;x.fill();x.globalAlpha=1}};function init(){ps=[];const n=Math.min(100,Math.floor(c.width*c.height/1e4));for(let i=0;i<n;i++){const p=new P();p.y=Math.random()*c.height;ps.push(p)}}function a(){x.fillStyle='rgba(5,5,8,.1)';x.fillRect(0,0,c.width,c.height);ps.forEach(p=>{p.u();p.d()});requestAnimationFrame(a)};window.addEventListener('resize',()=>{rs();init()});rs();init();a()}
-    function showRegister(){const f=document.querySelector('.login-form');f.innerHTML='<div class="input-group"><label>用户名</label><input type="text" class="input-field" id="regUser" placeholder="设置用户名" required></div><div class="input-group"><label>邮箱</label><input type="email" class="input-field" id="regEmail" placeholder="your@email.com" required></div><div class="input-group"><label>密码</label><input type="password" class="input-field" id="regPass" placeholder="设置密码" required></div><button type="button" class="btn-primary" onclick="doRegister()">创 建 账 号</button><div id="loginMsg" class="login-msg" style="display:none"></div><div class="login-links"><a href="#" onclick="location.reload()">返回登录</a></div>';f.addEventListener('submit',async e=>{e.preventDefault();const u=document.getElementById('regUser').value,e2=document.getElementById('regEmail').value,p=document.getElementById('regPass').value,msg=document.getElementById('loginMsg');try{const d=await api('/auth/register',{method:'POST',body:JSON.stringify({email:e2,password:p})});if(d.code===200){localStorage.setItem('elibor_token',d.data.token);token=d.data.token;showApp()}else{msg.textContent=d.message||'注册失败';msg.className='login-msg error';msg.style.display='block'}}catch(err){msg.textContent='网络错误';msg.className='login-msg error';msg.style.display='block'}})}
-    async function login(){const e=document.getElementById('loginEmail').value,p=document.getElementById('loginPassword').value,msg=document.getElementById('loginMsg');try{const d=await api('/auth/login',{method:'POST',body:JSON.stringify({email:e,password:p})});if(d.code===200){localStorage.setItem('elibor_token',d.data.token);token=d.data.token;showApp()}else{msg.textContent=d.message||'登录失败';msg.className='login-msg error';msg.style.display='block'}}catch(err){msg.textContent='网络错误';msg.className='login-msg error';msg.style.display='block'}}
-    async function doRegister(){const u=document.getElementById('regUser').value,e2=document.getElementById('regEmail').value,p=document.getElementById('regPass').value,msg=document.getElementById('loginMsg');try{const d=await api('/auth/register',{method:'POST',body:JSON.stringify({email:e2,password:p})});if(d.code===200){localStorage.setItem('elibor_token',d.data.token);token=d.data.token;showApp()}else{msg.textContent=d.message||'注册失败';msg.className='login-msg error';msg.style.display='block'}}catch(err){msg.textContent='网络错误';msg.className='login-msg error';msg.style.display='block'}}
-    function logout(){localStorage.removeItem('elibor_token');token=null;document.getElementById('loginPage').classList.remove('hidden');document.getElementById('mainApp').classList.remove('active')}
-    function toggleLang(){currentLang=currentLang==='zh'?'en':'zh';localStorage.setItem('lang',currentLang);document.getElementById('langToggle').textContent=currentLang==='zh'?'EN':'中文';renderSouls();renderPlanet()}
-    function showForgotPassword(){alert('请联系管理员重置密码: admin@elibor.com')}
-    async function showApp(){document.getElementById('loginPage').classList.add('hidden');document.getElementById('mainApp').classList.add('active');initParticles();await loadUserData();renderSouls();renderPlanet();renderFacilities()}
-    async function loadUserData(){try{const d=await api('/auth/me');if(d.code===200){userData=d.data;souls=userData.souls||[];userData.current_interventions=userData.dailyInterventions||0;userData.daily_interventions=userData.dailyInterventions||0;userData.plan=userData.level||'free';document.getElementById('userCredits').textContent=userData.credits||0;document.getElementById('userActions').textContent=(userData.dailyInterventions||0)+'/'+(userData.dailyInterventions||0);document.getElementById('actionsChip').className='stat-chip actions'+((userData.dailyInterventions||0)<=1?' low':'');const b=document.getElementById('planBadge');b.textContent=(userData.level||'free')==='free'?'免费版':(userData.level||'').includes('max')?'MAX版':'Pro版';b.className='plan-badge '+((userData.level||'free')==='free'?'free':(userData.level||'').includes('max')?'max':'pro')}else{logout()}}catch(err){logout()}}
-    function renderSouls(){const g=document.getElementById('soulsGrid');const t=currentLang==='zh';const stageNames=t?stages:stages_en;const profNames=t?professions:{miner:'Miner',farmer:'Farmer',engineer:'Engineer',scientist:'Scientist',builder:'Builder',energy_engineer:'Energy Eng.',teacher:'Teacher',doctor:'Doctor'};const actionNameMap=t?actionNames:{idle:'Idle',working:'Working',resting:'Resting',socializing:'Socializing',learning:'Learning',eating:'Eating',walking:'Walking',dead:'Deceased'};const ageLabel=t?'岁':' yrs';const createLabel=t?'创造新栖人':'Create Soul';const costLabel=t?'消耗100信用点':'Cost: 100 Credits';let html=souls.map(s=>'<div class="soul-card" onclick="openSoul(\''+s.id+'\')"><div class="soul-card-header"><div class="soul-avatar">'+s.name[0]+'<div class="status-dot '+s.currentAction+'"></div></div><span class="stage-badge '+s.stage+'">'+stageNames[s.stage]+'</span></div><h3 class="soul-name">'+s.name+'</h3><div class="soul-meta"><span>'+s.age+ageLabel+'</span><span>'+(profNames[s.profession]||s.profession)+'</span></div><div class="soul-status">'+(actionNameMap[s.currentAction]||'Idle')+'</div><div class="soul-bars"><div class="bar-row"><span class="bar-label">'+(t?'饱食':'Food')+'</span><div class="bar-track"><div class="bar-fill hunger" style="width:'+(s.hunger||50)+'%"></div></div><span class="bar-value">'+(s.hunger||50)+'%</span></div><div class="bar-row"><span class="bar-label">'+(t?'精力':'Energy')+'</span><div class="bar-track"><div class="bar-fill energy" style="width:'+(s.energy||50)+'%"></div></div><span class="bar-value">'+(s.energy||50)+'%</span></div><div class="bar-row"><span class="bar-label">'+(t?'情绪':'Mood')+'</span><div class="bar-track"><div class="bar-fill emotion" style="width:'+(s.emotion||50)+'%"></div></div><span class="bar-value">'+(s.emotion||50)+'%</span></div></div></div>').join('');html+='<div class="add-soul-card" onclick="showCreateSoul()"><div class="add-soul-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div><span>'+createLabel+'</span><p>'+costLabel+'</p></div>';g.innerHTML=html}
-    function renderPlanet(){const g=document.getElementById('planetGrid');let total=0;const vals={industry:25,agriculture:20,housing:15,technology:10,energy:30};planetIndexes.forEach(p=>total+=vals[p.key]);total=Math.round(total/5);document.getElementById('planetOverall').textContent=total+'%';g.innerHTML=planetIndexes.map(p=>'<div class="planet-card"><div class="planet-icon '+p.key+'"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="'+p.icon+'"/></svg></div><div><h4>'+p.name+'指数</h4><div class="planet-value-row"><span class="planet-value">'+vals[p.key]+'%</span><div class="planet-bar"><div class="planet-bar-fill '+p.key+'" style="width:'+vals[p.key]+'%"></div></div></div></div>').join('');document.getElementById('timeline').innerHTML='<div class="timeline-item"><div class="timeline-content">栖人小明完成了采矿工作，产出50单位矿石</div><div class="timeline-time">2分钟前</div></div><div class="timeline-item"><div class="timeline-content">工业指数突破30！</div><div class="timeline-time">10分钟前</div></div><div class="timeline-item"><div class="timeline-content">新栖人小红加入了星球</div><div class="timeline-time">30分钟前</div></div>'}
-    function renderFacilities(){const g=document.getElementById('facilitiesGrid');g.innerHTML=facilityTypes.map(f=>'<div class="facility-card"><div class="facility-header"><div class="facility-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg></div><div class="facility-info"><h3>'+f.name+'</h3><p>'+f.desc+'</p></div></div><div class="facility-output"><span style="color:var(--text-muted)">产出:</span>'+Object.entries(f.output).map(([k,v])=>'<span class="output-tag"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>'+resourceNames[k]+' +'+v+'</span>').join('')+'</div><div class="facility-cost"><span style="color:var(--text-muted)">费用:</span>'+Object.entries(f.cost).map(([k,v])=>'<span class="cost-tag"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/></svg>'+resourceNames[k]+' '+v+'</span>').join('')+'</div><button class="btn-build" onclick="buildFacility(\''+f.type+'\')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>建造</button></div>').join('')}
-    function openSoul(id){const s=souls.find(x=>x.id===id);if(!s)return;selectedSoulId=id;document.getElementById('modalAvatar').textContent=s.name[0];document.getElementById('modalName').textContent=s.name;document.getElementById('modalStage').textContent=stages[s.stage]||'成年';document.getElementById('modalAge').textContent=s.age+'岁';document.getElementById('modalProfession').textContent=professions[s.profession]||s.profession;document.getElementById('modalActions').textContent=userData.current_interventions||0;document.getElementById('modalMaxActions').textContent=userData.daily_interventions||0;const sb=document.getElementById('modalStatusBars');sb.innerHTML=Object.entries({hunger:s.hunger||50,energy:s.energy||50,emotion:s.emotion||50,social:s.social||50,learning:s.learning||50}).map(([k,v])=>'<div class="status-bar-item"><span class="status-bar-label"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14"><path d="M'+statusIcons[k]+'"/></svg>'+statusLabels[k]+'</span><div class="status-bar-track"><div class="status-bar-fill '+k+'" style="width:'+v+'%;background:'+{hunger:'linear-gradient(90deg,#f97316,#fb923c)',energy:'linear-gradient(90deg,#00d4ff,#22d3ee)',emotion:'linear-gradient(90deg,#8b5cf6,#c084fc)',social:'linear-gradient(90deg,#8b5cf6,#c084fc)',learning:'linear-gradient(90deg,#10b981,#34d399)'}[k]+'"></div></div><span class="status-bar-value">'+v+'%</span></div>').join('');const ig=document.getElementById('interventionGrid');ig.innerHTML=interventions.map(i=>'<button class="intervention-btn" onclick="performIntervention(\''+i.id+'\')" '+(userData.current_interventions<=0?'disabled':'')+'><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M'+i.icon+'"/></svg>'+i.name+'</button>').join('');document.getElementById('soulModal').classList.add('active')}
+    let currentLang=localStorage.getItem('lang')||'en';
+    const stages={child:'Child',youth:'Youth',adult:'Adult',elder:'Elder',senior:'Senior'};
+    const stages_cn={child:'儿童',youth:'青年',adult:'成年',elder:'老年',senior:'暮年'};
+    const professions={miner:'Miner',farmer:'Farmer',engineer:'Engineer',scientist:'Scientist',builder:'Builder',energy_engineer:'Energy Eng.',teacher:'Teacher',doctor:'Doctor'};
+    const professions_cn={miner:'矿工',farmer:'农民',engineer:'工程师',scientist:'科学家',builder:'建筑工',energy_engineer:'能源工程师',teacher:'教师',doctor:'医生'};
+    const genderMap={male:'Male',female:'Female',other:'Other'};
+    const genderMap_cn={male:'男',female:'女',other:'其他'};
+    const statusLabels={hunger:'Hunger',energy:'Energy',emotion:'Mood',social:'Social',learning:'Learning'};
+    const statusLabels_cn={hunger:'饱食',energy:'精力',emotion:'情绪',social:'社交',learning:'学习'};
+    const resourceNames={minerals:'Minerals',food:'Food',energy:'Energy',materials:'Materials',research:'Research'};
+    const resourceNames_cn={minerals:'矿石',food:'食物',energy:'能源',materials:'材料',research:'研究点'};
+    const interventions=[{id:'feed',name:'Feed',name_cn:'喂食',icon:'M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 0 0 1 1h3m10-11l2 2m-2-2v10a1 1 0 0 1-1 1h-3m-6 0a1 1 0 0 0 1-1v-4a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v4a1 1 0 0 0 1 1m-6 0h6'},{id:'rest',name:'Rest',name_cn:'休息',icon:'M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z'},{id:'work',name:'Work',name_cn:'工作',icon:'M7 21a4 4 0 0 1-4-4V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v12a4 4 0 0 1-4 4zm0 0h12a2 2 0 0 0 2-2v-4a2 2 0 0 0-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 0 1 2.828 0l2.829 2.829a2 2 0 0 1 0 2.828l-8.486 8.485M7 17h.01'},{id:'social',name:'Social',name_cn:'社交',icon:'M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2'},{id:'learn',name:'Learn',name_cn:'学习',icon:'M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253'},{id:'exercise',name:'Exercise',name_cn:'锻炼',icon:'M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0zm-2 0a1 1 0 1 1-2 0 1 1 0 0 1 2 0z'}];
+    const planetIndexes=[{key:'industry',name:'Industry',name_cn:'工业',icon:'M2 20h20v-4H2v4zm2-6h2v2H4v-2zm0-4h2v2H4v-2zm0-4h2v2H4V6zm4-2h12v2H8V4zm0 8h12v2H8v-2zm0 4h12v2H8v-2zm0 4h12v2H8v-2z'},{key:'agriculture',name:'Agriculture',name_cn:'农业',icon:'M12 8v4l3 3m6-3a9 9 0 1 1-18 0 9 9 0 0 1 18 0z'},{key:'housing',name:'Housing',name_cn:'居住',icon:'M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z'},{key:'technology',name:'Technology',name_cn:'科技',icon:'M12 8v4l3 3m6-3a9 9 0 1 1-18 0 9 9 0 0 1 18 0z'},{key:'energy',name:'Energy',name_cn:'能源',icon:'M13 2L3 14h9l-1 8 10-12h-9l1-8z'}];
+    const facilityTypes=[{type:'mine',name:'Mine',name_cn:'采矿站',desc:'Extract minerals',desc_cn:'开采矿石资源',output:{minerals:5},cost:{minerals:100,materials:50}},{type:'farm',name:'Farm',name_cn:'农场',desc:'Produce food',desc_cn:'种植食物资源',output:{food:4},cost:{minerals:80,materials:40}},{type:'power_plant',name:'Power Plant',name_cn:'发电站',desc:'Generate energy',desc_cn:'产生能源',output:{energy:6},cost:{minerals:120,materials:60}},{type:'workshop',name:'Workshop',name_cn:'工坊',desc:'Process materials',desc_cn:'加工材料',output:{materials:3},cost:{minerals:100,materials:80}},{type:'lab',name:'Lab',name_cn:'研究实验室',desc:'Produce research',desc_cn:'产出研究点',output:{research:2},cost:{minerals:150,materials:100}},{type:'hospital',name:'Hospital',name_cn:'医疗中心',desc:'Restore health',desc_cn:'恢复健康',output:{energy:3},cost:{minerals:130,materials:70}},{type:'school',name:'School',name_cn:'学校',desc:'Improve learning',desc_cn:'提升学习',output:{research:1},cost:{minerals:90,materials:50}},{type:'residence',name:'Residence',name_cn:'居住区',desc:'Improve social',desc_cn:'提升社交',output:{social:5},cost:{minerals:60,materials:30}}];
+
+    function showToast(msg,type='success'){
+        const t=document.getElementById('toast');
+        t.textContent=msg;
+        t.className='toast '+type+' show';
+        setTimeout(()=>t.classList.remove('show'),3000);
+    }
+    async function api(path,opts={}){
+        const h={'Content-Type':'application/json'};
+        if(token)h['Authorization']='Bearer '+token;
+        let url=path;
+        if(!path.startsWith('http'))url=API_BASE+path;
+        const r=await fetch(url,{...opts,headers:{...h,...opts.headers}});
+        return r.json();
+    }
+    function initParticles(){
+        const c=document.getElementById('particles'),x=c.getContext('2d');
+        let ps=[];
+        function rs(){c.width=window.innerWidth;c.height=window.innerHeight};
+        class P{constructor(){this.r()};r(){this.x=Math.random()*c.width;this.y=c.height+10;this.s=Math.random()*2+.5;this.sy=Math.random()*.5+.2;this.sx=(Math.random()-.5)*.3;this.o=Math.random()*.5+.1;this.c=Math.random()>.5?'#00d4ff':'#8b5cf6'};u(){this.y-=this.sy;this.x+=this.sx;this.o-=.002;if(this.y<-10||this.o<=0)this.r()};d(){x.beginPath();x.arc(this.x,this.y,this.s,0,Math.PI*2);x.fillStyle=this.c;x.globalAlpha=this.o;x.fill();x.globalAlpha=1}};
+        function init(){ps=[];const n=Math.min(100,Math.floor(c.width*c.height/10000));for(let i=0;i<n;i++){const p=new P();p.y=Math.random()*c.height;ps.push(p)}}
+        function a(){x.fillStyle='rgba(5,5,8,.1)';x.fillRect(0,0,c.width,c.height);ps.forEach(p=>{p.u();p.d()});requestAnimationFrame(a)};
+        window.addEventListener('resize',()=>{rs();init()});rs();init();a();
+    }
+    function showRegister(){
+        const f=document.querySelector('.login-form');
+        f.innerHTML='<div class="input-group"><label>Email</label><input type="email" class="input-field" id="regEmail" placeholder="your@email.com" required></div><div class="input-group"><label>Password</label><input type="password" class="input-field" id="regPass" placeholder="••••••••" required></div><button type="button" class="btn-primary" onclick="doRegister()">REGISTER</button><div id="loginMsg" class="login-msg" style="display:none"></div><div class="login-links"><a href="#" onclick="location.reload()">Back to Login</a></div>';
+    }
+    async function login(){
+        const e=document.getElementById('loginEmail').value,p=document.getElementById('loginPassword').value,msg=document.getElementById('loginMsg');
+        try{
+            const d=await api('/auth/login',{method:'POST',body:JSON.stringify({email:e,password:p})});
+            if(d.code===200){
+                localStorage.setItem('elibor_token',d.data.token);
+                token=d.data.token;
+                showApp();
+            }else{
+                msg.textContent=d.message||'Login failed';
+                msg.className='login-msg error';
+                msg.style.display='block';
+            }
+        }catch(err){
+            msg.textContent='Network error';
+            msg.className='login-msg error';
+            msg.style.display='block';
+        }
+    }
+    async function doRegister(){
+        const e2=document.getElementById('regEmail').value,p=document.getElementById('regPass').value,msg=document.getElementById('loginMsg');
+        try{
+            const d=await api('/auth/register',{method:'POST',body:JSON.stringify({email:e2,password:p})});
+            if(d.code===200){
+                localStorage.setItem('elibor_token',d.data.token);
+                token=d.data.token;
+                showApp();
+            }else{
+                msg.textContent=d.message||'Registration failed';
+                msg.className='login-msg error';
+                msg.style.display='block';
+            }
+        }catch(err){
+            msg.textContent='Network error';
+            msg.className='login-msg error';
+            msg.style.display='block';
+        }
+    }
+    function logout(){
+        localStorage.removeItem('elibor_token');
+        token=null;
+        document.getElementById('loginPage').classList.remove('hidden');
+        document.getElementById('mainApp').classList.remove('active');
+    }
+    function toggleLang(){
+        currentLang=currentLang==='en'?'cn':'en';
+        localStorage.setItem('lang',currentLang);
+        document.getElementById('langToggle').textContent=currentLang==='en'?'CN':'EN';
+        renderSouls();
+        renderPlanet();
+        renderFacilities();
+    }
+    function showForgotPassword(){alert('Contact admin to reset password: admin@elibor.com')}
+    async function showApp(){
+        document.getElementById('loginPage').classList.add('hidden');
+        document.getElementById('mainApp').classList.add('active');
+        initParticles();
+        await loadUserData();
+        renderSouls();
+        renderPlanet();
+        renderFacilities();
+    }
+    async function loadUserData(){
+        try{
+            const d=await api('/auth/me');
+            if(d.code===200){
+                userData=d.data;
+                souls=userData.souls||[];
+                userData.current_interventions=userData.dailyInterventions||0;
+                userData.daily_interventions=userData.dailyInterventions||0;
+                userData.plan=userData.level||'free';
+                document.getElementById('userCredits').textContent=userData.credits||0;
+                document.getElementById('userActions').textContent=(userData.dailyInterventions||0)+'/'+(userData.dailyInterventions||0);
+                document.getElementById('actionsChip').className='stat-chip actions'+((userData.dailyInterventions||0)<=1?' low':'');
+                const b=document.getElementById('planBadge');
+                b.textContent=(userData.level||'free')==='free'?'Free':(userData.level||'').includes('max')?'MAX':'Pro';
+                b.className='plan-badge '+((userData.level||'free')==='free'?'free':(userData.level||'').includes('max')?'max':'pro');
+            }else{
+                logout();
+            }
+        }catch(err){logout()}
+    }
+    function getActionIconPath(icon){
+        const paths={
+            idle:'M12 12m-10 0a10 10 0 1 0 20 0a10 10 0 1 0-20 0',
+            working:'M7 21a4 4 0 0 1-4-4V5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v12a4 4 0 0 1-4 4zm0 0h12a2 2 0 0 0 2-2v-4a2 2 0 0 0-2-2h-2.343M11 7.343l1.657-1.657a2 2 0 0 1 2.828 0l2.829 2.829a2 2 0 0 1 0 2.828l-8.486 8.485M7 17h.01',
+            resting:'M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z',
+            socializing:'M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2',
+            learning:'M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253',
+            eating:'M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 0 0 1 1h3m10-11l2 2m-2-2v10a1 1 0 0 1-1 1h-3m-6 0a1 1 0 0 0 1-1v-4a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v4a1 1 0 0 0 1 1m-6 0h6'
+        };
+        return paths[icon]||paths.idle;
+    }
+    function getEmotionIcon(val){
+        return val>=70?'smile':val>=40?'meh':'frown';
+    }
+    function getEmotionIconPath(icon){
+        const paths={
+            smile:'M9 12l2 2 4-4m6 2a9 9 0 1 1-18 0 9 9 0 0 1 18 0z',
+            meh:'M9 10h6m-3-3v6',
+            frown:'M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0zm-9 8a5 5 0 0 1 10 0v2H6v-2z'
+        };
+        return paths[icon]||paths.meh;
+    }
+    function renderSouls(){
+        const g=document.getElementById('soulsGrid');
+        const cn=currentLang==='cn';
+        const stageNames=cn?stages_cn:stages;
+        const profNames=cn?professions_cn:professions;
+        const genderLabels=cn?genderMap_cn:genderMap;
+        const statusText=cn?statusLabels_cn:statusLabels;
+        let html=souls.map(s=>{
+            const timelineItems=[
+                {content:(cn?s.name+'正在工作中':'Soul '+s.name+' is working'),time:cn?'刚刚':'Just now'},
+                {content:(cn?s.name+'的饱食度下降了5点':'Soul '+s.name+' hunger -5'),time:cn?'2分钟前':'2 mins ago'},
+                {content:(cn?s.name+'完成了今日学习':'Soul '+s.name+' finished daily learning'),time:cn?'5分钟前':'5 mins ago'},
+                {content:(cn?s.name+'与其他栖人进行了社交':'Soul '+s.name+' socialized'),time:cn?'10分钟前':'10 mins ago'}
+            ];
+            return '<div class="soul-card" onclick="openSoul(\''+s.id+'\')">\
+                <div class="soul-card-main">\
+                    <div class="soul-card-left">\
+                        <div class="soul-avatar-wrapper">\
+                            <div class="soul-avatar">'+s.name[0]+'</div>\
+                            <div class="status-icon action"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="'+getActionIconPath(s.currentAction||'idle')+'"/></svg></div>\
+                            <div class="status-icon emotion"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="'+getEmotionIconPath(getEmotionIcon(s.emotion||50))+'"/></svg></div>\
+                        </div>\
+                        <div class="soul-info">\
+                            <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">\
+                                <h3 class="soul-name">'+s.name+'</h3>\
+                                <span class="stage-badge '+s.stage+'">'+stageNames[s.stage]+'</span>\
+                            </div>\
+                            <div class="soul-detail">'+(cn?'职业':'Profession')+': '+(profNames[s.profession]||s.profession)+' · '+s.age+(cn?'岁':'y')+' · '+(genderLabels[s.gender]||s.gender||'-')+'</div>\
+                        </div>\
+                        <div class="soul-bars">\
+                            <div class="bar-row"><span class="bar-label">'+statusText.hunger+'</span><div class="bar-track"><div class="bar-fill hunger" style="width:'+(s.hunger||50)+'%"></div></div><span class="bar-value">'+(s.hunger||50)+'%</span></div>\
+                            <div class="bar-row"><span class="bar-label">'+statusText.energy+'</span><div class="bar-track"><div class="bar-fill energy" style="width:'+(s.energy||50)+'%"></div></div><span class="bar-value">'+(s.energy||50)+'%</span></div>\
+                            <div class="bar-row"><span class="bar-label">'+statusText.emotion+'</span><div class="bar-track"><div class="bar-fill emotion" style="width:'+(s.emotion||50)+'%"></div></div><span class="bar-value">'+(s.emotion||50)+'%</span></div>\
+                            <div class="bar-row"><span class="bar-label">'+statusText.social+'</span><div class="bar-track"><div class="bar-fill social" style="width:'+(s.social||50)+'%"></div></div><span class="bar-value">'+(s.social||50)+'%</span></div>\
+                            <div class="bar-row"><span class="bar-label">'+statusText.learning+'</span><div class="bar-track"><div class="bar-fill learning" style="width:'+(s.learning||50)+'%"></div></div><span class="bar-value">'+(s.learning||50)+'%</span></div>\
+                        </div>\
+                    </div>\
+                    <div class="soul-card-right">\
+                        <div style="font-size:13px;color:var(--text-secondary);margin-bottom:12px;display:flex;align-items:center;gap:6px;"><svg viewBox="0 0 24 24" fill="none" stroke="var(--neon-cyan)" stroke-width="2" width="16" height="16"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>'+(cn?'实时动态':'Activity')+'</div>\
+                        <div class="timeline-mini">'+timelineItems.map(item=>'<div class="timeline-mini-item"><div><div class="timeline-mini-content">'+item.content+'</div><div class="timeline-mini-time">'+item.time+'</div></div></div>').join('')+'</div>\
+                    </div>\
+                </div>\
+                <div class="soul-upgrade-section">\
+                    <div style="display:flex;gap:12px;">\
+                        <div class="upgrade-card" style="flex:1;">\
+                            <div class="upgrade-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg></div>\
+                            <div class="upgrade-info"><div class="upgrade-title">'+(cn?'属性强化':'Attribute Boost')+'</div><div class="upgrade-desc">'+(cn?'提升栖人所有属性上限':'Increase all attributes cap')+'</div></div>\
+                            <button class="upgrade-btn pro">'+(cn?'强化':'Boost')+'</button>\
+                        </div>\
+                        <div class="upgrade-card" style="flex:1;">\
+                            <div class="upgrade-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 8v4l3 3m6-3a9 9 0 1 1-18 0 9 9 0 0 1 18 0z"/></svg></div>\
+                            <div class="upgrade-info"><div class="upgrade-title">'+(cn?'加速成长':'Speed Up')+'</div><div class="upgrade-desc">'+(cn?'加速栖人成长速度50%':'50% growth speed boost')+'</div></div>\
+                            <button class="upgrade-btn max">'+(cn?'加速':'Speed')+'</button>\
+                        </div>\
+                    </div>\
+                </div>\
+            </div>';
+        }).join('');
+        html+='<div class="add-soul-card" onclick="showCreateSoul()"><div class="add-soul-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg></div><span>'+(cn?'创造新栖人':'Create Soul')+'</span><p>'+(cn?'消耗100信用点':'Cost: 100 Credits')+'</p></div>';
+        g.innerHTML=html;
+    }
+    function renderPlanet(){
+        const g=document.getElementById('planetGrid');
+        const cn=currentLang==='cn';
+        let total=0;
+        const vals={industry:25,agriculture:20,housing:15,technology:10,energy:30};
+        planetIndexes.forEach(p=>total+=vals[p.key]);
+        total=Math.round(total/5);
+        document.getElementById('planetOverall').textContent=total+'%';
+        g.innerHTML=planetIndexes.map(p=>'<div class="planet-card"><div class="planet-icon '+p.key+'"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="'+p.icon+'"/></svg></div><div><h4>'+(cn?p.name_cn:p.name)+' Index</h4><div class="planet-value-row"><span class="planet-value">'+vals[p.key]+'%</span><div class="planet-bar"><div class="planet-bar-fill '+p.key+'" style="width:'+vals[p.key]+'%"></div></div></div></div>').join('');
+        document.getElementById('timeline').innerHTML='<div class="timeline-item"><div class="timeline-content">'+(cn?'栖人小明完成了采矿工作，产出50单位矿石':'Soul Xiao Ming finished mining, produced 50 minerals')+'</div><div class="timeline-time">'+(cn?'2分钟前':'2 mins ago')+'</div></div><div class="timeline-item"><div class="timeline-content">'+(cn?'工业指数突破30！':'Industry index exceeded 30!')+'</div><div class="timeline-time">'+(cn?'10分钟前':'10 mins ago')+'</div></div><div class="timeline-item"><div class="timeline-content">'+(cn?'新栖人小红加入了星球':'New soul Xiao Hong joined the planet')+'</div><div class="timeline-time">'+(cn?'30分钟前':'30 mins ago')+'</div></div>';
+    }
+    function renderFacilities(){
+        const g=document.getElementById('facilitiesGrid');
+        const cn=currentLang==='cn';
+        const rn=cn?resourceNames_cn:resourceNames;
+        g.innerHTML=facilityTypes.map(f=>'<div class="facility-card"><div class="facility-header"><div class="facility-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg></div><div class="facility-info"><h3>'+(cn?f.name_cn:f.name)+'</h3><p>'+(cn?f.desc_cn:f.desc)+'</p></div></div><div class="facility-output"><span style="color:var(--text-muted)">'+(cn?'产出:':'Output:')+'</span>'+Object.entries(f.output).map(([k,v])=>'<span class="output-tag"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>'+rn[k]+' +'+v+'</span>').join('')+'</div><div class="facility-cost"><span style="color:var(--text-muted)">'+(cn?'费用:':'Cost:')+'</span>'+Object.entries(f.cost).map(([k,v])=>'<span class="cost-tag"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/></svg>'+rn[k]+' '+v+'</span>').join('')+'</div><button class="btn-build" onclick="buildFacility(\''+f.type+'\')"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>'+(cn?'建造':'Build')+'</button></div>').join('');
+    }
+    function openSoul(id){
+        const s=souls.find(x=>x.id===id);
+        if(!s)return;
+        selectedSoulId=id;
+        document.getElementById('modalAvatar').textContent=s.name[0];
+        document.getElementById('modalName').textContent=s.name;
+        document.getElementById('modalStage').textContent=(currentLang==='cn'?stages_cn:stages)[s.stage]||'Adult';
+        document.getElementById('modalAge').textContent=s.age+(currentLang==='cn'?'岁':'y');
+        document.getElementById('modalProfession').textContent=(currentLang==='cn'?professions_cn:professions)[s.profession]||s.profession;
+        document.getElementById('modalActions').textContent=userData.current_interventions||0;
+        document.getElementById('modalMaxActions').textContent=userData.daily_interventions||0;
+        const sb=document.getElementById('modalStatusBars');
+        const sl=currentLang==='cn'?statusLabels_cn:statusLabels;
+        sb.innerHTML=Object.entries({hunger:s.hunger||50,energy:s.energy||50,emotion:s.emotion||50,social:s.social||50,learning:s.learning||50}).map(([k,v])=>'<div class="status-bar-item"><span class="status-bar-label">'+sl[k]+'</span><div class="status-bar-track"><div class="status-bar-fill" style="width:'+v+'%;background:'+{hunger:'linear-gradient(90deg,#f97316,#fb923c)',energy:'linear-gradient(90deg,#00d4ff,#22d3ee)',emotion:'linear-gradient(90deg,#8b5cf6,#c084fc)',social:'linear-gradient(90deg,#8b5cf6,#c084fc)',learning:'linear-gradient(90deg,#10b981,#34d399)'}[k]+'"></div></div><span class="status-bar-value">'+v+'%</span></div>').join('');
+        const ig=document.getElementById('interventionGrid');
+        const cn=currentLang==='cn';
+        ig.innerHTML=interventions.map(i=>'<button class="intervention-btn" onclick="performIntervention(\''+i.id+'\')" '+(userData.current_interventions<=0?'disabled':'')+'><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="'+i.icon+'"/></svg>'+(cn?i.name_cn:i.name)+'</button>').join('');
+        document.getElementById('soulModal').classList.add('active');
+    }
     function closeSoulModal(){document.getElementById('soulModal').classList.remove('active')}
     function showCreateSoul(){document.getElementById('createSoulModal').classList.add('active');document.getElementById('newSoulName').value=''}
     function closeCreateSoul(){document.getElementById('createSoulModal').classList.remove('active')}
     function showSubscribe(){document.getElementById('subscribeModal').classList.add('active')}
     function closeSubscribe(){document.getElementById('subscribeModal').classList.remove('active')}
-    async function createSoul(){const name=document.getElementById('newSoulName').value.trim();if(!name)return;try{const d=await api('/souls',{method:'POST',body:JSON.stringify({name})});if(d.code===200){souls.push(d.data);renderSouls();closeCreateSoul();showToast('栖人创造成功')}else{showToast(d.message||'创造失败','error')}}catch(e){showToast('网络错误','error')}}
-    async function buildFacility(type){if(!souls.length)return;try{const d=await api('/planet/stats');if(d.code===200){showToast('建造成功')}else{showToast(d.message||'建造失败','error')}}catch(e){showToast('网络错误','error')}}
-    async function performIntervention(action){if(!selectedSoulId||userData.current_interventions<=0)return;try{const d=await api('/api/interventions/'+selectedSoulId+'/perform',{method:'POST',body:JSON.stringify({action})});if(d.code===200){userData.current_interventions--;document.getElementById('userActions').textContent=userData.current_interventions+'/'+userData.daily_interventions;document.getElementById('modalActions').textContent=userData.current_interventions;showToast('干预成功');await loadUserData()}else{showToast(d.message||'干预失败','error')}}catch(e){showToast('网络错误','error')}}
-    async function subscribe(planId){try{const d=await api('/api/payments/order',{method:'POST',body:JSON.stringify({plan_id:planId})});if(d.code===200&&d.data.url){window.location.href=d.data.url}else{showToast('订阅创建失败','error')}}catch(e){showToast('网络错误','error')}}
-    document.querySelectorAll('.nav-btn').forEach(function(btn){btn.addEventListener('click',function(){document.querySelectorAll('.nav-btn').forEach(function(b){b.classList.remove('active')});btn.classList.add('active');var pageName=btn.dataset.page;pageName=pageName.charAt(0).toUpperCase()+pageName.slice(1);document.querySelectorAll('.page').forEach(function(p){p.classList.remove('active')});document.getElementById('page'+pageName).classList.add('active')})});
+    async function createSoul(){
+        const name=document.getElementById('newSoulName').value.trim();
+        if(!name)return;
+        try{
+            const d=await api('/souls',{method:'POST',body:JSON.stringify({name})});
+            if(d.code===200){
+                souls.push(d.data);
+                renderSouls();
+                closeCreateSoul();
+                showToast(currentLang==='cn'?'栖人创造成功':'Soul created successfully');
+            }else{
+                showToast(d.message||(currentLang==='cn'?'创造失败':'Creation failed'),'error');
+            }
+        }catch(e){showToast(currentLang==='cn'?'网络错误':'Network error','error')}
+    }
+    async function buildFacility(type){
+        if(!souls.length)return;
+        try{
+            const d=await api('/planet/stats');
+            if(d.code===200){
+                showToast(currentLang==='cn'?'建造成功':'Built successfully');
+            }else{
+                showToast(d.message||(currentLang==='cn'?'建造失败':'Build failed'),'error');
+            }
+        }catch(e){showToast(currentLang==='cn'?'网络错误':'Network error','error')}
+    }
+    async function performIntervention(action){
+        if(!selectedSoulId||userData.current_interventions<=0)return;
+        try{
+            const d=await api('/api/interventions/'+selectedSoulId+'/perform',{method:'POST',body:JSON.stringify({action})});
+            if(d.code===200){
+                userData.current_interventions--;
+                document.getElementById('userActions').textContent=userData.current_interventions+'/'+userData.daily_interventions;
+                document.getElementById('modalActions').textContent=userData.current_interventions;
+                showToast(currentLang==='cn'?'干预成功':'Intervention successful');
+                await loadUserData();
+            }else{
+                showToast(d.message||(currentLang==='cn'?'干预失败':'Intervention failed'),'error');
+            }
+        }catch(e){showToast(currentLang==='cn'?'网络错误':'Network error','error')}
+    }
+    async function subscribe(planId){
+        try{
+            const d=await api('/api/payments/order',{method:'POST',body:JSON.stringify({plan_id:planId})});
+            if(d.code===200&&d.data.url){
+                window.location.href=d.data.url;
+            }else{
+                showToast(currentLang==='cn'?'订阅创建失败':'Subscription failed','error');
+            }
+        }catch(e){showToast(currentLang==='cn'?'网络错误':'Network error','error')}
+    }
+    document.querySelectorAll('.nav-btn').forEach(function(btn){
+        btn.addEventListener('click',function(){
+            document.querySelectorAll('.nav-btn').forEach(function(b){b.classList.remove('active')});
+            btn.classList.add('active');
+            var pageName=btn.dataset.page;
+            pageName=pageName.charAt(0).toUpperCase()+pageName.slice(1);
+            document.querySelectorAll('.page').forEach(function(p){p.classList.remove('active')});
+            document.getElementById('page'+pageName).classList.add('active');
+        });
+    });
     if(token){showApp()}else{initParticles()}
-    </script></body></html>
+    </script>
+</body>
+</html>
