@@ -4,7 +4,7 @@ import { io, timeEngineInstance } from '../web/server.js';
 import { ContentTemplate, DialogueTemplate } from '../types/content.js';
 
 export interface EngineEvent {
-    source: 'behavior' | 'weather' | 'meteor' | 'facility' | 'stage' | 'social' | 'monument' | 'drive' | 'emotion';
+    source: 'behavior' | 'weather' | 'meteor' | 'facility' | 'stage' | 'social' | 'monument' | 'drive' | 'emotion' | 'dialogue';
     soulId?: number;
     soulName?: string;
     type: string;
@@ -477,6 +477,40 @@ export class ContentEngine {
             ],
             icon: 'alert-circle',
             urgency: 'medium',
+            conditions: {}
+        });
+
+        this.templates.set('facility:built_oxygen', {
+            source: 'facility',
+            type: 'built_oxygen',
+            templateCn: '{facilityName}建造完成，氧气产出+{tirOutput}',
+            templateEn: '{facilityName} completed, oxygen output +{tirOutput}',
+            variantsCn: [
+                '新的{facilityName}拔地而起',
+                '{facilityName}建造完成，栖人们欢呼起来'
+            ],
+            variantsEn: [
+                'A new {facilityName} rises from the ground',
+                '{facilityName} completed, souls cheer'
+            ],
+            icon: 'wind',
+            urgency: 'low',
+            conditions: {}
+        });
+
+        this.templates.set('facility:built_water', {
+            source: 'facility',
+            type: 'built_water',
+            templateCn: '{facilityName}落成，水源循环系统启动',
+            templateEn: '{facilityName} completed, water system online',
+            variantsCn: [
+                '水循环系统开始运转'
+            ],
+            variantsEn: [
+                'The water system hums to life'
+            ],
+            icon: 'droplet',
+            urgency: 'low',
             conditions: {}
         });
 

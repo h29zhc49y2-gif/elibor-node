@@ -3,8 +3,10 @@ import logger from '../lib/logger.js';
 import { ActionType, SoulAction, SoulPersonality } from '../types/soul.js';
 import { io, timeEngineInstance } from '../web/server.js';
 import { ContentEngine, EngineEvent } from './content-engine.js';
+import { DialogueEngine } from './dialogue-engine.js';
 
 const contentEngine = new ContentEngine(new PrismaClient());
+const dialogueEngine = new DialogueEngine(new PrismaClient());
 
 export class BehaviorEngine {
     private prisma: PrismaClient;
@@ -319,6 +321,24 @@ export class BehaviorEngine {
         }
 
         await this.recordMemory(soul, action);
+
+        const dialogue = await dialogueEngine.generateDialogue(soul);
+        if (dialogue) {
+            const dialogueEvent: EngineEvent = {
+                source: 'dialogue',
+                soulId: soul.id,
+                soulName: soul.name,
+                type: 'inner_thought',
+                timestamp: new Date(),
+                urgency: 'low',
+                data: {
+                    dialogue: dialogue.cn,
+                    dialogueEn: dialogue.en,
+                    action: action.type,
+                },
+            };
+            await contentEngine.receive(dialogueEvent);
+        }
     }
 
     private async recordMemory(soul: Soul, action: SoulAction): Promise<void> {

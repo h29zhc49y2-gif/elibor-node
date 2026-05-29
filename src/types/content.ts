@@ -39,7 +39,7 @@ export interface FeedContent {
 }
 
 export interface EngineEvent {
-    source: 'behavior' | 'weather' | 'meteor' | 'facility' | 'stage' | 'social' | 'monument' | 'drive' | 'emotion';
+    source: 'behavior' | 'weather' | 'meteor' | 'facility' | 'stage' | 'social' | 'monument' | 'drive' | 'emotion' | 'dialogue';
     soulId?: number;
     soulName?: string;
     type: string;

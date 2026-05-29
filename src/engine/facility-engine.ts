@@ -1,5 +1,6 @@
 import { PrismaClient, Facility } from '@prisma/client';
 import logger from '../lib/logger.js';
+import { ContentEngine, EngineEvent } from './content-engine.js';
 
 export type FacilityType = 'oxygen' | 'climate' | 'water' | 'biomass' | 'capsule';
 export type FacilityLevel = 1 | 2 | 3;
@@ -198,9 +199,11 @@ export const FACILITY_CONFIGS: Record<FacilityType, Record<FacilityLevel, Facili
 
 export class FacilityEngine {
     private prisma: PrismaClient;
+    private contentEngine: ContentEngine;
 
     constructor(prisma: PrismaClient) {
         this.prisma = prisma;
+        this.contentEngine = new ContentEngine(prisma);
     }
 
     async buildFacility(
@@ -224,6 +227,21 @@ export class FacilityEngine {
                 damage: 0,
             },
         });
+
+        const event: EngineEvent = {
+            source: 'facility',
+            type: `built_${type}`,
+            timestamp: new Date(),
+            urgency: 'low',
+            data: {
+                facilityName: config.name,
+                facilityType: type,
+                level,
+                tirOutput: config.tirOutput,
+            },
+        };
+
+        await this.contentEngine.receive(event);
 
         logger.info(`[Facility] Built ${config.name} (Lv.${level})`);
 
