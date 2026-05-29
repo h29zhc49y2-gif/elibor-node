@@ -51,7 +51,9 @@ const DRIVE_NEED_MATRIX: Record<DriveType, Record<string, number>> = {
 };
 
 const ACTION_DRIVE_MAP: Record<string, { drive: DriveType; need: string }> = {
-    working: { drive: 'survival', need: 'working_hard' },
+    gathering: { drive: 'survival', need: 'gathering' },
+    crafting: { drive: 'survival', need: 'crafting' },
+    working: { drive: 'survival', need: 'working' },
     building_oxygen: { drive: 'survival', need: 'building_oxygen' },
     building_warmth: { drive: 'survival', need: 'building_warmth' },
     collecting_water: { drive: 'survival', need: 'collecting_water' },
@@ -62,10 +64,10 @@ const ACTION_DRIVE_MAP: Record<string, { drive: DriveType; need: string }> = {
     socializing: { drive: 'belonging', need: 'socializing' },
     cooperating: { drive: 'belonging', need: 'cooperating' },
     resting: { drive: 'safety', need: 'rest' },
-    sleeping: { drive: 'safety', need: 'rest' },
+    sleeping: { drive: 'safety', need: 'sleeping' },
     building_shelter: { drive: 'safety', need: 'building_shelter' },
     eating: { drive: 'survival', need: 'eating' },
-    idle: { drive: 'selfAct', need: 'resting' },
+    idle: { drive: 'selfAct', need: 'idle' },
 };
 
 export class DriveBehaviorEngine {
@@ -181,17 +183,19 @@ export class DriveBehaviorEngine {
 
     private getNeedScore(need: string, needs: PlanetNeeds): number {
         const needMatrix: Record<string, number> = {
+            gathering: 0.9,
+            crafting: 0.8,
+            working: 0.7,
             building_oxygen: needs.oxygen < 50 ? 0.9 : 0.3,
             collecting_water: needs.water < 30 ? 0.8 : 0.2,
             building_warmth: needs.climate < 30 ? 0.7 : 0.2,
             building_shelter: 0.5,
-            exploring_food: 0.4,
             researching: needs.biomass < 20 ? 0.8 : 0.3,
             creating: 0.5,
             discovering: 0.6,
             socializing: 0.5,
             cooperating: 0.5,
-            working_hard: 0.6,
+            exploring: 0.5,
             teaching: 0.4,
             leading: 0.3,
             achieving: 0.5,

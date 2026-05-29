@@ -32,6 +32,8 @@ export type ActionType =
     | 'exploring'
     | 'sleeping'
     | 'idle'
+    | 'gathering'
+    | 'crafting'
     | 'building_oxygen'
     | 'building_warmth'
     | 'collecting_water'
