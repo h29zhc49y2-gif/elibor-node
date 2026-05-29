@@ -16,6 +16,11 @@ import { EventEngine } from '../engine/event-engine.js';
 
 const app = express();
 const httpServer = createServer(app);
+
+app.get('/health', (req, res) => {
+    res.json({ status: 'ok', timestamp: Date.now() });
+});
+
 const io = new Server(httpServer, {
     cors: {
         origin: '*',
