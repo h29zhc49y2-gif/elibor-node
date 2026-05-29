@@ -190,7 +190,9 @@
         .timeline-card{background:var(--bg-card);border:1px solid rgba(255,255,255,.08);border-radius:var(--radius);padding:22px}
         .timeline-title{font-size:14px;margin-bottom:18px;display:flex;align-items:center;gap:8px}
         .timeline-title svg{color:var(--neon-cyan);width:18px;height:18px}
-        .timeline{display:flex;flex-direction:column;gap:14px}
+        .timeline{display:flex;flex-direction:column;gap:14px;max-height:400px;overflow-y:auto}
+        .timeline::-webkit-scrollbar{width:4px}
+        .timeline::-webkit-scrollbar-thumb{background:rgba(255,255,255,.2);border-radius:2px}
         .timeline-item{display:flex;gap:14px;padding-left:20px;position:relative}
         .timeline-item::before{content:'';position:absolute;left:0;top:6px;width:8px;height:8px;border-radius:50%;background:var(--neon-cyan)}
         .timeline-item::after{content:'';position:absolute;left:3px;top:18px;bottom:-18px;width:2px;background:rgba(255,255,255,.08)}
@@ -524,8 +526,10 @@
         socket=io(WS_BASE,{ transports:['websocket','polling'] });
         socket.on('connect',()=>{ if(token&&userData.id)socket.emit('join','user_'+userData.id); });
         socket.on('new_event',(event)=>{
-            liveEvents.unshift({...event,timestamp:event.timestamp||Date.now()});
-            if(liveEvents.length>liveEventsMax)liveEvents.pop();
+            liveEvents.push({...event,timestamp:event.timestamp||Date.now()});
+            if(liveEvents.length>liveEventsMax){
+                liveEvents.shift();
+            }
             renderLiveFeed();
             renderLiveFeedList();
         });
@@ -535,16 +539,24 @@
         const tEl=document.getElementById('timeline');
         if(!tEl)return;
         const cn=currentLang==='cn';
-        if(liveEvents.length===0){
+        
+        const recentEvents=liveEvents.slice(-20);
+        
+        if(recentEvents.length===0){
             tEl.innerHTML='<div style="text-align:center;padding:40px;color:var(--text-muted);font-size:13px;">'+(cn?'暂无实时动态':'No live events yet')+'</div>';
             return;
         }
-        tEl.innerHTML=liveEvents.slice(0,20).map(e=>{
+        
+        let html=recentEvents.map(e=>{
             const time=e.planetTime?formatPlanetTime(e.planetTime,cn):'';
-            return '<div class="timeline-item"><div class="timeline-content">'+(cn?e.message_cn:e.message)+'</div><div class="timeline-time">'+time+'</div></div>';
+            const soulName=e.soulName?'<span style="color:var(--neon-cyan)">'+e.soulName+'</span> · ':'';
+            return '<div class="timeline-item"><div class="timeline-content">'+(cn?e.message_cn:e.message)+'</div><div class="timeline-time">'+soulName+time+'</div></div>';
         }).join('');
         
-        // 同时更新栖人卡片里的实时动态
+        tEl.innerHTML=html;
+        
+        setTimeout(()=>{ tEl.scrollTop=tEl.scrollHeight; },50);
+        
         renderSouls();
     }
     let currentFilter='all';
