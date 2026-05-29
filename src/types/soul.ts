@@ -23,7 +23,7 @@ export type SoulStage = 'child' | 'youth' | 'adult' | 'elder' | 'ancient';
 export type SoulStatus = 'alive' | 'dead';
 export type SoulProfession = 'farmer' | 'miner' | 'engineer' | 'architect' | 'scientist' | 'healer' | 'energy_engineer' | 'teacher';
 
-export type ActionType = 
+export type ActionType =
     | 'working'
     | 'resting'
     | 'eating'
@@ -31,7 +31,21 @@ export type ActionType =
     | 'learning'
     | 'exploring'
     | 'sleeping'
-    | 'idle';
+    | 'idle'
+    | 'building_oxygen'
+    | 'building_warmth'
+    | 'collecting_water'
+    | 'building_shelter'
+    | 'researching'
+    | 'creating'
+    | 'discovering'
+    | 'cooperating'
+    | 'helping'
+    | 'sharing'
+    | 'teaching'
+    | 'leading'
+    | 'achieving'
+    | 'resting_safety';
 
 export interface SoulAction {
     type: ActionType;
