@@ -81,6 +81,45 @@ model EmotionState {
     soul         Soul    @relation(fields: [soulId], references: [id], onDelete: Cascade)
 }
 
+model EpisodicMemory {
+    id          Int      @id @default(autoincrement())
+    soulId      Int
+    type        String   // social, environmental, self, milestone
+    contentCn   String
+    contentEn  String
+    emotionTag  String
+    importance  Float    @default(0.5)
+    timestamp   DateTime @default(now())
+    @@index([soulId, timestamp])
+    @@index([soulId, importance])
+}
+
+model SemanticRelation {
+    id              Int       @id @default(autoincrement())
+    soulId          Int
+    targetSoulId    Int
+    trust           Float     @default(0.5)
+    intimacy        Float     @default(0)
+    familiarity     Float     @default(0)
+    labels         String[]  @default([])
+    interactionCount Int     @default(0)
+    updatedAt       DateTime  @updatedAt
+    @@unique([soulId, targetSoulId])
+    @@index([soulId])
+}
+
+model NarrativeMemory {
+    id              Int       @id @default(autoincrement())
+    soulId          Int
+    descriptionCn   String
+    descriptionEn  String
+    emotionTag      String
+    importance      Float
+    timestamp       DateTime  @default(now())
+    @@index([soulId, timestamp])
+    @@index([importance])
+}
+
 model PlanetStats {
     id          Int      @id @default(autoincrement())
     oxygen      Float    @default(0)
