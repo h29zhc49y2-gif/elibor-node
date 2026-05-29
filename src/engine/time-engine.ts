@@ -113,53 +113,15 @@ export class TimeEngine {
         const lastTickTime = stats.lastTickTime ? stats.lastTickTime.getTime() : Date.now();
         const now = Date.now();
         const realMinutesPassed = (now - lastTickTime) / 60000;
-
-        const maxRealMinutesPassed = 10;
-        const clampedRealMinutes = Math.min(realMinutesPassed, maxRealMinutesPassed);
-        const planetMinutesPassed = clampedRealMinutes * 10;
-
-        let totalMinutes = stats.hour * 60 + planetMinutesPassed;
-        let newHour = Math.floor(totalMinutes / 60) % 24;
-        let newMinute = Math.floor(totalMinutes % 60);
-
-        let newDay = stats.dayCount;
-        let newMonth = stats.month || 1;
-        let newYear = stats.year || 0;
-
-        const hoursPassed = Math.floor(totalMinutes / 60);
-        if (hoursPassed > 0) {
-            const daysInMonth = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
-            let totalHoursToAdd = hoursPassed;
-
-            while (totalHoursToAdd > 0) {
-                const hoursLeftInDay = 24 - newHour;
-                if (totalHoursToAdd >= hoursLeftInDay) {
-                    totalHoursToAdd -= hoursLeftInDay;
-                    newDay += 1;
-                    newHour = 0;
-
-                    const days = daysInMonth[newMonth - 1];
-                    if (newDay > days) {
-                        newDay = 1;
-                        newMonth += 1;
-                        if (newMonth > 12) {
-                            newMonth = 1;
-                            newYear += 1;
-                        }
-                    }
-                } else {
-                    newHour += totalHoursToAdd;
-                    totalHoursToAdd = 0;
-                }
-            }
-        }
+        const planetMinutesPassed = realMinutesPassed * 10;
+        const currentMinute = Math.floor(planetMinutesPassed) % 60;
 
         return {
-            year: newYear,
-            month: newMonth,
-            day: newDay,
-            hour: newHour,
-            minute: newMinute,
+            year: stats.year,
+            month: stats.month,
+            day: stats.dayCount,
+            hour: stats.hour,
+            minute: Math.floor(currentMinute),
             timestamp: new Date(),
         };
     }
