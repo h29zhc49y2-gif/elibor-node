@@ -9,6 +9,8 @@ import { DriveEngine } from './drive-engine.js';
 import { MemoryEngine } from './memory-engine.js';
 import { WeatherEngine } from './weather-engine.js';
 import { MeteorEngine } from './meteor-engine.js';
+import { FacilityEngine } from './facility-engine.js';
+import { SocialEngine } from './social-engine.js';
 import { terraformingEngine } from './terraforming-engine.js';
 
 const timeEngine = new TimeEngine(prisma);
@@ -19,6 +21,8 @@ const driveEngine = new DriveEngine(prisma);
 const memoryEngine = new MemoryEngine(prisma);
 const weatherEngine = new WeatherEngine(prisma);
 const meteorEngine = new MeteorEngine(prisma);
+const facilityEngine = new FacilityEngine(prisma);
+const socialEngine = new SocialEngine(prisma);
 
 let isProcessing = false;
 
@@ -64,8 +68,13 @@ async function engineTick() {
         await weatherEngine.tick();
         await meteorEngine.tick();
 
-        await eventEngine.processRandomEvents(activeSouls);
-        await eventEngine.processSocialEvents(activeSouls);
+        if (activeSouls.length >= 2 && Math.random() < 0.1) {
+            const soulA = activeSouls[Math.floor(Math.random() * activeSouls.length)];
+            const soulB = activeSouls[Math.floor(Math.random() * activeSouls.length)];
+            if (soulA.id !== soulB.id) {
+                await socialEngine.processSocialInteraction(soulA.id, soulB.id, 'conversation');
+            }
+        }
 
         if (currentTime.hour === 0 && currentTime.minute < 6) {
             await eventEngine.generateDailyReport(currentTime.day);

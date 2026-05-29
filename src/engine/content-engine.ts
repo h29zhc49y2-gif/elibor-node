@@ -531,6 +531,18 @@ export class ContentEngine {
             { category: 'inner_thought', contentCn: '{soul}轻轻叹了口气，想起远方的故土', contentEn: '{soul} sighs softly, remembering the distant homeland', probability: 0.1 },
             { category: 'inner_thought', contentCn: '星光下，{soul}感到一丝宁静', contentEn: 'Under the starlight, {soul} feels a moment of peace', probability: 0.1 },
         ]);
+
+        this.templates.set('dialogue:inner_thought', {
+            source: 'dialogue',
+            type: 'inner_thought',
+            templateCn: '{dialogue}',
+            templateEn: '{dialogueEn}',
+            variantsCn: [],
+            variantsEn: [],
+            icon: 'message-circle',
+            urgency: 'low',
+            conditions: {}
+        });
         
         logger.info(`ContentEngine: Loaded ${this.templates.size} templates`);
     }
