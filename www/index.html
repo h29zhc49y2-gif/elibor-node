@@ -392,7 +392,7 @@
                     <div class="planet-overall"><div class="planet-overall-label" id="labelOverall">Overall Index</div><div class="planet-overall-value" id="planetOverall">0%</div></div>
                 </div>
                 <div class="planet-grid" id="planetGrid"></div>
-                <div class="timeline-card"><h3 class="timeline-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg><span id="titleFeed">Live Feed</span></h3><div class="timeline" id="timeline"></div></div>
+                <div class="timeline-card"><h3 class="timeline-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg><span id="titleFeed">Planet Feed</span></h3><div class="timeline" id="timeline"></div></div>
             </div>
             <div class="page" id="pageResources">
                 <div class="page-header"><div><h1 class="page-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg><span id="titleResources">Resources</span></h1><p class="page-subtitle" id="descResources">View and manage soul resources</p></div></div>
@@ -444,7 +444,9 @@
     let currentLang=localStorage.getItem('lang')||detectBrowserLang();
     let socket=null;
     let liveEvents=[];
+    let planetEvents=[];
     let liveEventsMax=50;
+    const planetEventsMax=50;
     let currentPlanetTime=null;
     let lastRealTimeUpdate=null;
     let timeUpdateInterval=null;
@@ -526,9 +528,17 @@
         socket=io(WS_BASE,{ transports:['websocket','polling'] });
         socket.on('connect',()=>{ if(token&&userData.id)socket.emit('join','user_'+userData.id); });
         socket.on('new_event',(event)=>{
-            liveEvents.push({...event,timestamp:event.timestamp||Date.now()});
-            if(liveEvents.length>liveEventsMax){
-                liveEvents.shift();
+            const ts=event.timestamp||Date.now();
+            if(event.soulId||event.soulName||event.soulName){
+                liveEvents.push({...event,timestamp:ts});
+                if(liveEvents.length>liveEventsMax){
+                    liveEvents.shift();
+                }
+            }else{
+                planetEvents.push({...event,timestamp:ts});
+                if(planetEvents.length>planetEventsMax){
+                    planetEvents.shift();
+                }
             }
             renderLiveFeed();
             renderLiveFeedList();
@@ -540,17 +550,19 @@
         if(!tEl)return;
         const cn=currentLang==='cn';
         
-        const recentEvents=liveEvents.slice(-20);
+        const recentEvents=planetEvents.slice(-20);
         
         if(recentEvents.length===0){
-            tEl.innerHTML='<div style="text-align:center;padding:40px;color:var(--text-muted);font-size:13px;">'+(cn?'暂无实时动态':'No live events yet')+'</div>';
+            tEl.innerHTML='<div style="text-align:center;padding:40px;color:var(--text-muted);font-size:13px;">'+(cn?'暂无星球动态':'No planet events yet')+'</div>';
             return;
         }
         
         let html=recentEvents.map(e=>{
             const time=e.planetTime?formatPlanetTime(e.planetTime,cn):'';
-            const soulName=e.soulName?'<span style="color:var(--neon-cyan)">'+e.soulName+'</span> · ':'';
-            return '<div class="timeline-item"><div class="timeline-content">'+(cn?e.message_cn:e.message)+'</div><div class="timeline-time">'+soulName+time+'</div></div>';
+            const icon=e.icon?'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;margin-right:6px;color:var(--neon-cyan)"><use href="#icon-'+e.icon+'"/></svg>':'';
+            const msgCn=e.messageCn||e.message_cn||e.message||'';
+            const msgEn=e.messageEn||e.message||'';
+            return '<div class="timeline-item"><div class="timeline-content">'+icon+(cn?msgCn:msgEn)+'</div><div class="timeline-time">'+time+'</div></div>';
         }).join('');
         
         tEl.innerHTML=html;
@@ -872,8 +884,8 @@
                         </div>\
                     </div>\
                     <div class="soul-card-right">\
-                        <div style="font-size:13px;color:var(--text-secondary);margin-bottom:12px;display:flex;align-items:center;gap:6px;"><svg viewBox="0 0 24 24" fill="none" stroke="var(--neon-cyan)" stroke-width="2" width="16" height="16"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>'+(cn?'实时动态':'Activity')+'</div>\
-                        <div class="timeline-mini">'+displayEvents.map(e=>{ const time=e.planetTime?formatPlanetTime(e.planetTime,cn):e.time; const content=e.message? (cn?e.message_cn:e.message) : e.content; return '<div class="timeline-mini-item"><div><div class="timeline-mini-content">'+content+'</div><div class="timeline-mini-time">'+time+'</div></div></div>'; }).join('')+'</div>\
+                        <div style="font-size:13px;color:var(--text-secondary);margin-bottom:12px;display:flex;align-items:center;gap:6px;"><svg viewBox="0 0 24 24" fill="none" stroke="var(--neon-cyan)" stroke-width="2" width="16" height="16"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>'+(cn?'栖人动态':'Soul Activity')+'</div>\
+                        <div class="timeline-mini">'+displayEvents.map(e=>{ const time=e.planetTime?formatPlanetTime(e.planetTime,cn):''; const msgCn=e.messageCn||e.message_cn||e.message||e.content||''; const msgEn=e.messageEn||e.message||e.content||''; return '<div class="timeline-mini-item"><div><div class="timeline-mini-content">'+(cn?msgCn:msgEn)+'</div><div class="timeline-mini-time">'+time+'</div></div></div>'; }).join('')+'</div>\
                     </div>\
                 </div>\
                 <div class="soul-upgrade-section">\
