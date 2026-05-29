@@ -728,6 +728,7 @@
         renderSouls();
         renderPlanet();
         renderFacilities();
+        loadHistoricalFeed();
     }
     function updateUIText(){
         const cn=currentLang==='cn';
@@ -822,6 +823,26 @@
                 logout();
             }
         }catch(err){logout()}
+    }
+    async function loadHistoricalFeed(){
+        try{
+            const [soulFeed, planetFeed] = await Promise.all([
+                api('/events/feed?type=soul&limit=50'),
+                api('/events/feed?type=planet&limit=50')
+            ]);
+            if(soulFeed.code===200){
+                soulFeed.data.forEach(e=>{
+                    liveEvents.push({...e,timestamp:new Date(e.timestamp).getTime()});
+                });
+            }
+            if(planetFeed.code===200){
+                planetFeed.data.forEach(e=>{
+                    planetEvents.push({...e,timestamp:new Date(e.timestamp).getTime()});
+                });
+            }
+            renderLiveFeed();
+            renderLiveFeedList();
+        }catch(err){console.error('Failed to load historical feed:',err)}
     }
     function getActionIconPath(icon){
         const paths={

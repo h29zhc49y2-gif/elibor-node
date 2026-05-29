@@ -95,3 +95,46 @@ router.get('/monuments', authMiddleware, async (req: Request, res: Response) => 
 });
 
 export default router;
+
+// GET /api/events/feed - Get historical feed content
+router.get('/feed', authMiddleware, async (req: Request, res: Response) => {
+    try {
+        const limit = parseInt(req.query.limit as string) || 50;
+        const type = req.query.type as string;
+
+        const where: any = {};
+        if (type === 'soul') {
+            where.soulId = { not: null };
+        } else if (type === 'planet') {
+            where.soulId = null;
+        }
+
+        const feeds = await prisma.feedContent.findMany({
+            where,
+            orderBy: { timestamp: 'desc' },
+            take: limit,
+        });
+
+        const formatted = feeds.map(f => ({
+            id: f.id,
+            type: f.type,
+            soulId: f.soulId,
+            soulName: f.soulName,
+            icon: f.icon,
+            message: f.messageCn,
+            messageEn: f.messageEn,
+            planetTime: f.planetTime,
+            urgency: f.urgency,
+            timestamp: f.timestamp,
+        }));
+
+        res.json({
+            code: 200,
+            message: 'success',
+            data: formatted,
+        });
+    } catch (error) {
+        logger.error('Get feed error:', error);
+        res.status(500).json({ error: 'Failed to get feed' });
+    }
+});
