@@ -2,6 +2,8 @@ import { PrismaClient } from '@prisma/client';
 import logger from '../lib/logger.js';
 
 export interface PlanetTime {
+    year: number;
+    month: number;
     day: number;
     hour: number;
     minute: number;
@@ -16,7 +18,6 @@ export class TimeEngine {
     }
 
     async advance(): Promise<PlanetTime> {
-        // 获取当前星球状态
         let stats = await this.prisma.planetStats.findFirst();
 
         if (!stats) {
@@ -28,42 +29,61 @@ export class TimeEngine {
                     technology: 5,
                     energy: 10,
                     population: 0,
+                    year: 0,
+                    month: 1,
                     dayCount: 1,
+                    hour: 6,
                 },
             });
         }
 
-        // 计算当前星球时间
-        // 每6分钟 = 星球1小时
-        // 24小时 = 144分钟 = 星球1天
-        const now = new Date();
-        const startOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-        const minutesSinceMidnight = Math.floor((now.getTime() - startOfDay.getTime()) / 60000);
-        const planetHour = Math.floor(minutesSinceMidnight / 6) % 24;
-        const planetMinute = (minutesSinceMidnight % 6) * 10;
+        const daysInMonth = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
 
-        // 检查是否是新的一天
-        const expectedDay = Math.floor(minutesSinceMidnight / 144) + 1;
-        if (expectedDay > stats.dayCount) {
-            await this.prisma.planetStats.update({
-                where: { id: stats.id },
-                data: { dayCount: expectedDay },
-            });
+        let newHour = stats.hour + 1;
+        let newDay = stats.dayCount;
+        let newMonth = stats.month || 1;
+        let newYear = stats.year || 0;
 
-            logger.info(`[Time] New day: Day ${expectedDay}`);
-
-            // 记录新的一天事件（跳过系统事件，因为没有有效的 soulId）
+        if (newHour >= 24) {
+            newHour = 0;
+            newDay += 1;
+            logger.info(`[Time] New day: 聚栖${newYear}年 ${newMonth}月${newDay}日`);
         }
 
+        const days = daysInMonth[newMonth - 1];
+        if (newDay > days) {
+            newDay = 1;
+            newMonth += 1;
+            logger.info(`[Time] New month: 聚栖${newYear}年 ${newMonth}月`);
+        }
+
+        if (newMonth > 12) {
+            newMonth = 1;
+            newYear += 1;
+            logger.info(`[Time] New year: 聚栖${newYear}年`);
+        }
+
+        await this.prisma.planetStats.update({
+            where: { id: stats.id },
+            data: {
+                year: newYear,
+                month: newMonth,
+                dayCount: newDay,
+                hour: newHour,
+            },
+        });
+
         return {
-            day: stats.dayCount,
-            hour: planetHour,
-            minute: planetMinute,
-            timestamp: now,
+            year: newYear,
+            month: newMonth,
+            day: newDay,
+            hour: newHour,
+            minute: 0,
+            timestamp: new Date(),
         };
     }
 
     getPlanetTimeString(time: PlanetTime): string {
-        return `第${time.day}天 ${String(time.hour).padStart(2, '0')}:${String(time.minute).padStart(2, '0')}`;
+        return `聚栖${time.year}年 ${String(time.month).padStart(2, '0')}月${String(time.day).padStart(2, '0')}日 ${String(time.hour).padStart(2, '0')}:00`;
     }
 }

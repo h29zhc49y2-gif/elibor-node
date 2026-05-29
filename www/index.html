@@ -258,7 +258,44 @@
         .toast.show{transform:translateX(-50%) translateY(0);opacity:1}
         .toast.success{border-color:var(--neon-green);color:var(--neon-green)}
         .toast.error{border-color:var(--neon-red);color:var(--neon-red)}
-        @media(max-width:768px){.header{padding:12px 16px}.header-nav{display:none}.main-content{padding:20px 16px}.soul-card-main{flex-direction:column}.soul-card-left{width:100%;border-right:none;border-bottom:1px solid rgba(255,255,255,.06)}.soul-card-right{min-width:100%}.subscribe-grid{grid-template-columns:1fr}.ranking-header,.ranking-row{grid-template-columns:50px 1fr}.ranking-header span:nth-child(3),.ranking-header span:nth-child(4),.ranking-header span:nth-child(5),.ranking-row span:nth-child(3),.ranking-row span:nth-child(4),.ranking-row span:nth-child(5){display:none}}
+        .planet-status-bar{background:var(--bg-card);border:1px solid rgba(255,255,255,.08);border-radius:var(--radius-lg);padding:20px;margin-bottom:20px}
+        .planet-status-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}
+        .planet-time{display:flex;align-items:center;gap:12px}
+        .planet-time-icon{width:44px;height:44px;border-radius:var(--radius);background:linear-gradient(135deg,rgba(0,212,255,.15),rgba(139,92,246,.15));display:flex;align-items:center;justify-content:center;color:var(--neon-cyan)}
+        .planet-time-icon svg{width:22px;height:22px}
+        .planet-time-info{display:flex;flex-direction:column}
+        .planet-time-label{font-size:11px;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px}
+        .planet-time-value{font-family:'Orbitron',sans-serif;font-size:18px;font-weight:600;background:linear-gradient(135deg,var(--neon-cyan),var(--neon-purple));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+        .planet-overview{display:flex;gap:4px}
+        .mini-index{display:flex;align-items:center;gap:6px;padding:8px 14px;background:var(--bg-input);border-radius:20px}
+        .mini-index-icon{width:16px;height:16px;border-radius:50%;display:flex;align-items:center;justify-content:center}
+        .mini-index-icon svg{width:10px;height:10px}
+        .mini-index-icon.industry{background:rgba(0,212,255,.2);color:var(--neon-cyan)}
+        .mini-index-icon.agriculture{background:rgba(0,255,136,.2);color:var(--neon-green)}
+        .mini-index-icon.housing{background:rgba(139,92,246,.2);color:var(--neon-purple)}
+        .mini-index-icon.technology{background:rgba(16,185,129,.2);color:#10b981}
+        .mini-index-icon.energy{background:rgba(255,170,0,.2);color:var(--neon-amber)}
+        .mini-index-value{font-size:12px;font-weight:600}
+        .live-feed-section{margin-top:20px}
+        .live-feed-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+        .live-feed-title{display:flex;align-items:center;gap:8px;font-size:14px;color:var(--text-secondary)}
+        .live-feed-title svg{color:var(--neon-cyan);width:18px;height:18px}
+        .live-feed-filter{display:flex;gap:4px}
+        .filter-btn{padding:6px 12px;border-radius:20px;font-size:11px;font-weight:500;border:none;background:transparent;color:var(--text-muted);cursor:pointer;transition:all .2s}
+        .filter-btn.active{background:rgba(0,212,255,.1);color:var(--neon-cyan)}
+        .filter-btn:hover{color:var(--text-primary)}
+        .live-feed-list{max-height:200px;overflow-y:auto;display:flex;flex-direction:column;gap:12px}
+        .live-feed-item{display:flex;gap:12px;padding:12px 14px;background:rgba(255,255,255,.03);border-radius:var(--radius);transition:background .2s}
+        .live-feed-item:hover{background:rgba(255,255,255,.05)}
+        .live-feed-avatar{width:36px;height:36px;border-radius:8px;background:linear-gradient(135deg,var(--neon-cyan),var(--neon-purple));display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;color:#000;flex-shrink:0}
+        .live-feed-content{flex:1;min-width:0}
+        .live-feed-text{font-size:13px;color:var(--text-primary);margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+        .live-feed-time{font-size:11px;color:var(--text-muted)}
+        .live-feed-badge{padding:2px 8px;border-radius:12px;font-size:10px;font-weight:500;flex-shrink:0}
+        .live-feed-badge.system{background:rgba(139,92,246,.15);color:var(--neon-purple)}
+        .live-feed-badge.action{background:rgba(0,212,255,.15);color:var(--neon-cyan)}
+        .live-feed-badge.social{background:rgba(0,255,136,.15);color:var(--neon-green)}
+        .live-feed-badge.event{background:rgba(255,170,0,.15);color:var(--neon-amber)}
     </style>
 </head>
 <body>
@@ -314,6 +351,36 @@
                 <div class="page-header">
                     <div><h1 class="page-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg><span id="titleSouls">My Souls</span></h1><p class="page-subtitle" id="descSouls">Manage and guide your souls through life</p></div>
                     <button class="btn-primary" style="max-width:180px" onclick="showCreateSoul()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg><span id="btnCreateSoulText">Create Soul</span></button>
+                </div>
+                <div class="planet-status-bar">
+                    <div class="planet-status-header">
+                        <div class="planet-time">
+                            <div class="planet-time-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v12"/><path d="M8 10h8"/><path d="M8 14h8"/></svg></div>
+                            <div class="planet-time-info">
+                                <div class="planet-time-label" id="labelPlanetTime">Planet Time</div>
+                                <div class="planet-time-value" id="planetTimeDisplay">聚栖0年 01月01日 06:00</div>
+                            </div>
+                        </div>
+                        <div class="planet-overview">
+                            <div class="mini-index"><div class="mini-index-icon industry"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 20h20v-4H2v4zm2-6h2v2H4v-2zm0-4h2v2H4v-2zm0-4h2v2H4V6zm4-2h12v2H8V4zm0 8h12v2H8v-2zm0 4h12v2H8v-2zm0 4h12v2H8v-2z"/></svg></div><span class="mini-index-value" id="miniIndustry">25%</span></div>
+                            <div class="mini-index"><div class="mini-index-icon agriculture"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 8v4l3 3m6-3a9 9 0 1 1-18 0 9 9 0 0 1 18 0z"/></svg></div><span class="mini-index-value" id="miniAgriculture">20%</span></div>
+                            <div class="mini-index"><div class="mini-index-icon housing"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg></div><span class="mini-index-value" id="miniHousing">15%</span></div>
+                            <div class="mini-index"><div class="mini-index-icon technology"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 8v4l3 3m6-3a9 9 0 1 1-18 0 9 9 0 0 1 18 0z"/></svg></div><span class="mini-index-value" id="miniTechnology">10%</span></div>
+                            <div class="mini-index"><div class="mini-index-icon energy"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg></div><span class="mini-index-value" id="miniEnergy">30%</span></div>
+                        </div>
+                    </div>
+                    <div class="live-feed-section">
+                        <div class="live-feed-header">
+                            <div class="live-feed-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg><span id="labelLiveFeed">Live Feed</span></div>
+                            <div class="live-feed-filter">
+                                <button class="filter-btn active" id="filterAll">All</button>
+                                <button class="filter-btn" id="filterAction">Action</button>
+                                <button class="filter-btn" id="filterSocial">Social</button>
+                                <button class="filter-btn" id="filterEvent">Event</button>
+                            </div>
+                        </div>
+                        <div class="live-feed-list" id="liveFeedList"></div>
+                    </div>
                 </div>
                 <div class="souls-grid" id="soulsGrid"></div>
             </div>
@@ -385,6 +452,7 @@
             liveEvents.unshift({...event,timestamp:event.timestamp||Date.now()});
             if(liveEvents.length>liveEventsMax)liveEvents.pop();
             renderLiveFeed();
+            renderLiveFeedList();
         });
         socket.on('disconnect',()=>{});
     }
@@ -404,14 +472,45 @@
         // 同时更新栖人卡片里的实时动态
         renderSouls();
     }
-    function formatTimeAgo(ts,cn){
-        const diff=Date.now()-ts;
-        const mins=Math.floor(diff/60000);
-        const hours=Math.floor(diff/3600000);
-        if(mins<1)return cn?'刚刚':'Just now';
-        if(mins<60)return cn?mins+'分钟前':mins+' mins ago';
-        if(hours<24)return cn?hours+'小时前':hours+' hours ago';
-        return cn?Math.floor(hours/24)+'天前':Math.floor(hours/24)+' days ago';
+    let currentFilter='all';
+    function renderLiveFeedList(){
+        const listEl=document.getElementById('liveFeedList');
+        const cn=currentLang==='cn';
+        let filteredEvents=liveEvents;
+        if(currentFilter!=='all'){
+            filteredEvents=liveEvents.filter(e=>e.type===currentFilter);
+        }
+        if(filteredEvents.length===0){
+            listEl.innerHTML='<div style="text-align:center;padding:30px;color:var(--text-muted);font-size:13px;">'+(cn?'暂无动态':'No events')+'</div>';
+            return;
+        }
+        listEl.innerHTML=filteredEvents.slice(0,10).map(e=>{
+            const time=formatTimeAgo(e.timestamp,cn);
+            const content=e.message?(cn?e.message_cn:e.message):e.content;
+            const name=e.soulName||'System';
+            const type=e.type||'system';
+            return '<div class="live-feed-item"><div class="live-feed-avatar">'+name[0]+'</div><div class="live-feed-content"><div class="live-feed-text">'+content+'</div><div class="live-feed-time">'+name+' · '+time+'</div></div><span class="live-feed-badge '+type+'">'+getTypeLabel(type,cn)+'</span></div>';
+        }).join('');
+    }
+    function getTypeLabel(type,cn){
+        const labels={
+            system:cn?'系统':'System',
+            action:cn?'行动':'Action',
+            social:cn?'社交':'Social',
+            event:cn?'事件':'Event'
+        };
+        return labels[type]||labels.system;
+    }
+    function setFilter(filter){
+        currentFilter=filter;
+        document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
+        document.getElementById('filter'+filter.charAt(0).toUpperCase()+filter.slice(1)).classList.add('active');
+        renderLiveFeedList();
+    }
+    function updatePlanetTime(year,month,day,hour){
+        const cn=currentLang==='cn';
+        const timeStr=cn?`聚栖${year}年 ${String(month).padStart(2,'0')}月${String(day).padStart(2,'0')}日 ${String(hour).padStart(2,'0')}:00`:`Year ${year} ${String(month).padStart(2,'0')}/${String(day).padStart(2,'0')} ${String(hour).padStart(2,'0')}:00`;
+        document.getElementById('planetTimeDisplay').textContent=timeStr;
     }
     const logger={info:()=>{},error:console.error};
     const uiText={
@@ -582,6 +681,12 @@
         document.getElementById('labelCost').textContent=cn?'消耗:':'Cost:';
         document.getElementById('labelCredits').textContent=cn?'信用点':'Credits';
         document.getElementById('btnCreateSoul').textContent=cn?'创造':'Create';
+        document.getElementById('labelPlanetTime').textContent=cn?'星球时间':'Planet Time';
+        document.getElementById('labelLiveFeed').textContent=cn?'实时动态':'Live Feed';
+        document.getElementById('filterAll').textContent=cn?'全部':'All';
+        document.getElementById('filterAction').textContent=cn?'行动':'Action';
+        document.getElementById('filterSocial').textContent=cn?'社交':'Social';
+        document.getElementById('filterEvent').textContent=cn?'事件':'Event';
     }
     function showForgotPassword(){alert(currentLang==='cn'?'联系管理员重置密码: admin@elibor.com':'Contact admin to reset password: admin@elibor.com')}
     async function showApp(){
@@ -591,9 +696,28 @@
         initSocket();
         await loadUserData();
         updateUIText();
+        initSampleEvents();
         renderSouls();
         renderPlanet();
         renderFacilities();
+        renderLiveFeedList();
+    }
+    function initSampleEvents(){
+        const cn=currentLang==='cn';
+        if(liveEvents.length===0){
+            liveEvents=[
+                {soulName:'系统',type:'system',message:cn?'欢迎来到聚栖星球！':'Welcome to Elibor!',message_cn:'欢迎来到聚栖星球！',timestamp:Date.now()},
+                {soulName:'测试栖人',type:'action',message:cn?'测试栖人开始工作了':'Test Soul started working',message_cn:'测试栖人开始工作了',timestamp:Date.now()-60000},
+                {soulName:'小月',type:'social',message:cn?'小月与其他栖人进行了友好的交流':'Xiaoyue made new friends',message_cn:'小月与其他栖人进行了友好的交流',timestamp:Date.now()-120000},
+                {soulName:'系统',type:'event',message:cn?'聚栖历正式启动！':'Elibor Calendar started!',message_cn:'聚栖历正式启动！',timestamp:Date.now()-180000},
+                {soulName:'阿木',type:'action',message:cn?'阿木完成了今天的学习任务':'A Mu finished daily learning',message_cn:'阿木完成了今天的学习任务',timestamp:Date.now()-240000},
+                {soulName:'小芳',type:'action',message:cn?'小芳正在休息恢复精力':'Xiao Fang is resting',message_cn:'小芳正在休息恢复精力',timestamp:Date.now()-300000},
+                {soulName:'系统',type:'event',message:cn?'星球综合指数提升了！':'Planet index increased!',message_cn:'星球综合指数提升了！',timestamp:Date.now()-360000},
+                {soulName:'大壮',type:'action',message:cn?'大壮在矿场辛勤工作中':'Da Zhuang is mining',message_cn:'大壮在矿场辛勤工作中',timestamp:Date.now()-420000},
+                {soulName:'小美',type:'social',message:cn?'小美举办了一场小型聚会':'Xiao Mei hosted a gathering',message_cn:'小美举办了一场小型聚会',timestamp:Date.now()-480000},
+                {soulName:'系统',type:'system',message:cn?'实时动态系统已上线':'Live feed system online',message_cn:'实时动态系统已上线',timestamp:Date.now()-540000}
+            ];
+        }
     }
     async function loadUserData(){
         try{
@@ -804,6 +928,10 @@
             document.getElementById('page'+pageName).classList.add('active');
         });
     });
+    document.getElementById('filterAll').addEventListener('click',function(){setFilter('all')});
+    document.getElementById('filterAction').addEventListener('click',function(){setFilter('action')});
+    document.getElementById('filterSocial').addEventListener('click',function(){setFilter('social')});
+    document.getElementById('filterEvent').addEventListener('click',function(){setFilter('event')});
     if(token){showApp()}else{initParticles()}
     </script>
 </body>

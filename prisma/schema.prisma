@@ -60,7 +60,10 @@ model PlanetStats {
     technology  Float    @default(0)
     energy      Float    @default(0)
     population  Int      @default(0)
+    year        Int      @default(0)
+    month       Int      @default(1)
     dayCount    Int      @default(1)
+    hour        Int      @default(6)
     updatedAt   DateTime @updatedAt
 }
 
