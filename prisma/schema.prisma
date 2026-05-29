@@ -50,6 +50,35 @@ model Soul {
     resources         SoulResource[]
     relationshipsA    Relationship[] @relation("SoulA")
     relationshipsB    Relationship[] @relation("SoulB")
+    driveState        DriveState?
+    emotionState      EmotionState?
+}
+
+model DriveState {
+    id          Int     @id @default(autoincrement())
+    soulId      Int     @unique
+    survival    Float   @default(0.8)
+    safety      Float   @default(0.7)
+    belonging   Float   @default(0.5)
+    esteem      Float   @default(0.5)
+    selfAct     Float   @default(0.3)
+    updatedAt   DateTime @updatedAt
+    soul        Soul    @relation(fields: [soulId], references: [id], onDelete: Cascade)
+}
+
+model EmotionState {
+    id           Int     @id @default(autoincrement())
+    soulId       Int     @unique
+    joy          Float   @default(0.3)
+    sadness      Float   @default(0)
+    anger        Float   @default(0)
+    fear         Float   @default(0.2)
+    surprise     Float   @default(0)
+    disgust      Float   @default(0)
+    trust        Float   @default(0.5)
+    anticipation Float   @default(0.3)
+    updatedAt    DateTime @updatedAt
+    soul         Soul    @relation(fields: [soulId], references: [id], onDelete: Cascade)
 }
 
 model PlanetStats {
