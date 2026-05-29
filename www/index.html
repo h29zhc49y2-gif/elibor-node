@@ -847,15 +847,9 @@
         const genderLabels=cn?genderMap_cn:genderMap;
         const statusText=cn?statusLabels_cn:statusLabels;
         let html=souls.map(s=>{
-            // 获取这个栖人的专属实时动态（如果有）
             const soulSpecificEvents=liveEvents.filter(e=>e.soulName===s.name);
-            // 如果没有专属事件，显示全局最新的几个，或者默认占位
             const displayEvents=soulSpecificEvents.length>0?soulSpecificEvents.slice(0,4):
-                                 liveEvents.length>0?liveEvents.slice(0,4):
-                                 [
-                                     {content:(cn?s.name+'正在等待中':'Soul '+s.name+' is waiting'),time:cn?'刚刚':'Just now'},
-                                     {content:(cn?s.name+'在思考人生':'Soul '+s.name+' is thinking'),time:cn?'2分钟前':'2 mins ago'}
-                                 ];
+                                 [{content:(cn?s.name+'正在等待中':'Soul '+s.name+' is waiting'),time:''}];
             return '<div class="soul-card" onclick="openSoul(\''+s.id+'\')">\
                 <div class="soul-card-main">\
                     <div class="soul-card-left">\
