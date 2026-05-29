@@ -125,10 +125,17 @@ model Intervention {
 model Facility {
     id           Int      @id @default(autoincrement())
     name         String
-    type         String
-    level        Int      @default(1)
-    planetStatsId Int?
+    type         String   // oxygen, climate, water, biomass, capsule
+    level        Int      @default(1)   // 1-3级
+    location     String?  // indoor, outdoor
+    operation    String   @default("auto")  // auto, manual
+    efficiency   Float    @default(1.0)   // 当前效率 0-1
+    damage       Float    @default(0)   // 损坏率 0-1
+    guardSoulId  Int?     // 负责栖人ID
+    outputType   String?  // oxygen, climate, water, biomass
+    outputAmount Float    @default(0)   // 产出量
     createdAt    DateTime @default(now())
+    updatedAt    DateTime @updatedAt
 }
 
 model Monument {
