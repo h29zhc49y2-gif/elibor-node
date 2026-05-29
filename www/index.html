@@ -278,12 +278,12 @@
                 <p>JU QI PLAN</p>
             </div>
             <form class="login-form" id="loginForm">
-                <div class="input-group"><label>Email</label><input type="email" class="input-field" id="loginEmail" placeholder="your@email.com" required></div>
-                <div class="input-group"><label>Password</label><input type="password" class="input-field" id="loginPassword" placeholder="••••••••" required></div>
-                <button type="button" class="btn-primary" onclick="login()">LOGIN</button>
+                <div class="input-group"><label id="labelEmail">Email</label><input type="email" class="input-field" id="loginEmail" placeholder="your@email.com" required></div>
+                <div class="input-group"><label id="labelPassword">Password</label><input type="password" class="input-field" id="loginPassword" placeholder="••••••••" required></div>
+                <button type="button" class="btn-primary" onclick="login()" id="btnLogin">LOGIN</button>
                 <div id="loginMsg" class="login-msg" style="display:none"></div>
             </form>
-            <div class="login-links"><a href="javascript:void(0)" onclick="showRegister()">Register</a><a href="javascript:void(0)" onclick="showForgotPassword()">Forgot Password</a></div>
+            <div class="login-links"><a href="javascript:void(0)" onclick="showRegister()" id="linkRegister">Register</a><a href="javascript:void(0)" onclick="showForgotPassword()" id="linkForgot">Forgot Password</a></div>
         </div>
     </div>
     <div class="app" id="mainApp">
@@ -293,11 +293,11 @@
                 <span>Elibor</span>
             </div>
             <nav class="header-nav">
-                <button class="nav-btn active" data-page="souls"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg><span>Souls</span></button>
-                <button class="nav-btn" data-page="planet"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg><span>Planet</span></button>
-                <button class="nav-btn" data-page="resources"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg><span>Resources</span></button>
-                <button class="nav-btn" data-page="facilities"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="2" width="16" height="20" rx="2" ry="2"/><path d="M9 22v-4h6v4"/></svg><span>Facilities</span></button>
-                <button class="nav-btn" data-page="monuments"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="2" x2="12" y2="6"/><path d="M12 22v-8"/><path d="M12 14l-4 0"/><path d="M12 14l4 0"/></svg><span>Monuments</span></button>
+                <button class="nav-btn active" data-page="souls"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg><span id="navSouls">Souls</span></button>
+                <button class="nav-btn" data-page="planet"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg><span id="navPlanet">Planet</span></button>
+                <button class="nav-btn" data-page="resources"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg><span id="navResources">Resources</span></button>
+                <button class="nav-btn" data-page="facilities"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="2" width="16" height="20" rx="2" ry="2"/><path d="M9 22v-4h6v4"/></svg><span id="navFacilities">Facilities</span></button>
+                <button class="nav-btn" data-page="monuments"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="2" x2="12" y2="6"/><path d="M12 22v-8"/><path d="M12 14l-4 0"/><path d="M12 14l4 0"/></svg><span id="navMonuments">Monuments</span></button>
             </nav>
             <div class="header-right">
                 <div class="stat-chip credits"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v12"/><path d="M8 10h8"/><path d="M8 14h8"/></svg><span id="userCredits">0</span></div>
@@ -311,31 +311,31 @@
         <main class="main-content">
             <div class="page active" id="pageSouls">
                 <div class="page-header">
-                    <div><h1 class="page-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>My Souls</h1><p class="page-subtitle">Manage and guide your souls through life</p></div>
-                    <button class="btn-primary" style="max-width:180px" onclick="showCreateSoul()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Create Soul</button>
+                    <div><h1 class="page-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg><span id="titleSouls">My Souls</span></h1><p class="page-subtitle" id="descSouls">Manage and guide your souls through life</p></div>
+                    <button class="btn-primary" style="max-width:180px" onclick="showCreateSoul()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg><span id="btnCreateSoulText">Create Soul</span></button>
                 </div>
                 <div class="souls-grid" id="soulsGrid"></div>
             </div>
             <div class="page" id="pagePlanet">
                 <div class="page-header planet-header">
-                    <div><h1 class="page-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/></svg>Planet Status</h1><p class="page-subtitle">Comprehensive planet development indicators</p></div>
-                    <div class="planet-overall"><div class="planet-overall-label">Overall Index</div><div class="planet-overall-value" id="planetOverall">0%</div></div>
+                    <div><h1 class="page-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/></svg><span id="titlePlanet">Planet Status</span></h1><p class="page-subtitle" id="descPlanet">Comprehensive planet development indicators</p></div>
+                    <div class="planet-overall"><div class="planet-overall-label" id="labelOverall">Overall Index</div><div class="planet-overall-value" id="planetOverall">0%</div></div>
                 </div>
                 <div class="planet-grid" id="planetGrid"></div>
-                <div class="timeline-card"><h3 class="timeline-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>Live Feed</h3><div class="timeline" id="timeline"></div></div>
+                <div class="timeline-card"><h3 class="timeline-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg><span id="titleFeed">Live Feed</span></h3><div class="timeline" id="timeline"></div></div>
             </div>
             <div class="page" id="pageResources">
-                <div class="page-header"><div><h1 class="page-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>Resources</h1><p class="page-subtitle">View and manage soul resources</p></div></div>
+                <div class="page-header"><div><h1 class="page-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg><span id="titleResources">Resources</span></h1><p class="page-subtitle" id="descResources">View and manage soul resources</p></div></div>
                 <div class="soul-selector" id="soulSelector"></div>
                 <div class="resources-grid" id="resourcesGrid"></div>
             </div>
             <div class="page" id="pageFacilities">
-                <div class="page-header"><div><h1 class="page-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="2" width="16" height="20" rx="2" ry="2"/><path d="M9 22v-4h6v4"/></svg>Facilities</h1><p class="page-subtitle">Build and upgrade facilities</p></div></div>
+                <div class="page-header"><div><h1 class="page-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="2" width="16" height="20" rx="2" ry="2"/><path d="M9 22v-4h6v4"/></svg><span id="titleFacilities">Facilities</span></h1><p class="page-subtitle" id="descFacilities">Build and upgrade facilities</p></div></div>
                 <div class="facilities-grid" id="facilitiesGrid"></div>
             </div>
             <div class="page" id="pageMonuments">
-                <div class="page-header"><div><h1 class="page-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="2" x2="12" y2="6"/><path d="M12 22v-8"/><path d="M12 14l-4 0"/><path d="M12 14l4 0"/></svg>Monuments</h1><p class="page-subtitle">Honor souls who contributed to the planet</p></div></div>
-                <div class="ranking-table"><div class="ranking-header"><span>Rank</span><span>Soul</span><span>Profession</span><span>Age</span><span>Contribution</span></div><div id="monumentsList"></div></div>
+                <div class="page-header"><div><h1 class="page-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="2" x2="12" y2="6"/><path d="M12 22v-8"/><path d="M12 14l-4 0"/><path d="M12 14l4 0"/></svg><span id="titleMonuments">Monuments</span></h1><p class="page-subtitle" id="descMonuments">Honor souls who contributed to the planet</p></div></div>
+                <div class="ranking-table"><div class="ranking-header"><span id="rankHeader">Rank</span><span id="soulHeader">Soul</span><span id="profHeader">Profession</span><span id="ageHeader">Age</span><span id="contribHeader">Contribution</span></div><div id="monumentsList"></div></div>
             </div>
         </main>
     </div>
@@ -348,19 +348,19 @@
         <div class="modal-section"><h3 class="section-title"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>Interventions</h3><p class="intervention-hint">Remaining: <strong id="modalActions">0</strong> / <span id="modalMaxActions">0</span></p><div class="intervention-grid" id="interventionGrid"></div></div>
     </div></div>
     <div class="modal-overlay" id="subscribeModal"><div class="modal">
-        <div class="modal-header"><div class="modal-title"><svg viewBox="0 0 24 24" fill="none" stroke="var(--neon-amber)" stroke-width="2" width="24" height="24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg><h2>Subscribe</h2></div><button class="modal-close" onclick="closeSubscribe()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
+        <div class="modal-header"><div class="modal-title"><svg viewBox="0 0 24 24" fill="none" stroke="var(--neon-amber)" stroke-width="2" width="24" height="24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg><h2 id="modalTitleSubscribe">Subscribe</h2></div><button class="modal-close" onclick="closeSubscribe()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
         <div class="subscribe-grid">
-            <div class="plan-card"><h3>Pro Monthly</h3><div class="plan-price"><span class="plan-price-value">$4.99</span><span class="plan-price-unit">/month</span></div><ul class="plan-features"><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>3 Souls</li><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>5 Interventions/day</li><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>50 Credits/day</li></ul><button class="btn-subscribe" onclick="subscribe('pro_monthly')">Subscribe</button></div>
-            <div class="plan-card popular"><span class="plan-popular-badge">Recommended</span><h3>Pro Yearly</h3><div class="plan-price"><span class="plan-price-value">$49.99</span><span class="plan-price-unit">/year</span></div><ul class="plan-features"><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>3 Souls</li><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>5 Interventions/day</li><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>50 Credits/day</li></ul><button class="btn-subscribe" onclick="subscribe('pro_yearly')">Subscribe</button></div>
-            <div class="plan-card"><h3>MAX Monthly</h3><div class="plan-price"><span class="plan-price-value">$9.99</span><span class="plan-price-unit">/month</span></div><ul class="plan-features"><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>5 Souls</li><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Unlimited Interventions</li><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>200 Credits/day</li></ul><button class="btn-subscribe" onclick="subscribe('max_monthly')">Subscribe</button></div>
-            <div class="plan-card"><h3>MAX Yearly</h3><div class="plan-price"><span class="plan-price-value">$99.99</span><span class="plan-price-unit">/year</span></div><ul class="plan-features"><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>5 Souls</li><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Unlimited Interventions</li><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>200 Credits/day</li></ul><button class="btn-subscribe" onclick="subscribe('max_yearly')">Subscribe</button></div>
+            <div class="plan-card"><h3>Pro Monthly</h3><div class="plan-price"><span class="plan-price-value">$4.99</span><span class="plan-price-unit">/month</span></div><ul class="plan-features"><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>3 Souls</li><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>5 Interventions/day</li><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>50 Credits/day</li></ul><button class="btn-subscribe" onclick="subscribe('pro_monthly')" id="btnSubProM">Subscribe</button></div>
+            <div class="plan-card popular"><span class="plan-popular-badge" id="badgeRecommended">Recommended</span><h3>Pro Yearly</h3><div class="plan-price"><span class="plan-price-value">$49.99</span><span class="plan-price-unit">/year</span></div><ul class="plan-features"><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>3 Souls</li><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>5 Interventions/day</li><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>50 Credits/day</li></ul><button class="btn-subscribe" onclick="subscribe('pro_yearly')" id="btnSubProY">Subscribe</button></div>
+            <div class="plan-card"><h3>MAX Monthly</h3><div class="plan-price"><span class="plan-price-value">$9.99</span><span class="plan-price-unit">/month</span></div><ul class="plan-features"><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>5 Souls</li><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Unlimited Interventions</li><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>200 Credits/day</li></ul><button class="btn-subscribe" onclick="subscribe('max_monthly')" id="btnSubMaxM">Subscribe</button></div>
+            <div class="plan-card"><h3>MAX Yearly</h3><div class="plan-price"><span class="plan-price-value">$99.99</span><span class="plan-price-unit">/year</span></div><ul class="plan-features"><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>5 Souls</li><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>Unlimited Interventions</li><li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>200 Credits/day</li></ul><button class="btn-subscribe" onclick="subscribe('max_yearly')" id="btnSubMaxY">Subscribe</button></div>
         </div>
     </div></div>
     <div class="modal-overlay" id="createSoulModal"><div class="modal" style="max-width:400px">
-        <div class="modal-header"><div class="modal-title"><svg viewBox="0 0 24 24" fill="none" stroke="var(--neon-purple)" stroke-width="2" width="24" height="24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg><h2>Create Soul</h2></div><button class="modal-close" onclick="closeCreateSoul()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
-        <p style="color:var(--text-secondary);font-size:13px;margin-bottom:20px">Give your soul a name to begin the journey</p>
-        <div class="input-group"><label>Soul Name</label><input type="text" class="input-field" id="newSoulName" placeholder="Enter name..." maxlength="20"></div>
-        <div style="display:flex;align-items:center;gap:8px;margin-bottom:20px;font-size:13px;color:var(--text-secondary)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><circle cx="12" cy="12" r="10"/><path d="M12 6v12"/><path d="M8 10h8"/><path d="M8 14h8"/></svg> Cost: <span style="color:var(--neon-amber);font-weight:600">100 Credits</span></div>
+        <div class="modal-header"><div class="modal-title"><svg viewBox="0 0 24 24" fill="none" stroke="var(--neon-purple)" stroke-width="2" width="24" height="24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg><h2 id="modalTitleCreate">Create Soul</h2></div><button class="modal-close" onclick="closeCreateSoul()"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg></button></div>
+        <p style="color:var(--text-secondary);font-size:13px;margin-bottom:20px" id="createSoulDesc">Give your soul a name to begin the journey</p>
+        <div class="input-group"><label id="labelSoulName">Soul Name</label><input type="text" class="input-field" id="newSoulName" placeholder="Enter name..." maxlength="20"></div>
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:20px;font-size:13px;color:var(--text-secondary)"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16"><circle cx="12" cy="12" r="10"/><path d="M12 6v12"/><path d="M8 10h8"/><path d="M8 14h8"/></svg><span id="labelCost">Cost:</span> <span style="color:var(--neon-amber);font-weight:600">100 <span id="labelCredits">Credits</span></span></div>
         <button class="btn-primary" onclick="createSoul()" id="btnCreateSoul">Create</button>
     </div></div>
     <div class="toast" id="toast"></div>
@@ -370,7 +370,37 @@
     let userData={};
     let souls=[];
     let selectedSoulId=null;
-    let currentLang=localStorage.getItem('lang')||'en';
+    let currentLang=localStorage.getItem('lang')||detectBrowserLang();
+    function detectBrowserLang(){const nav=navigator.language||navigator.userLanguage;return nav.startsWith('zh')?'cn':'en'}
+    const uiText={
+        en:{
+            login:'LOGIN',register:'REGISTER',email:'Email',password:'Password',forgotPassword:'Forgot Password',backToLogin:'Back to Login',
+            mySouls:'My Souls',soulsDesc:'Manage and guide your souls through life',createSoul:'Create Soul',
+            planet:'Planet Status',planetDesc:'Comprehensive planet development indicators',overallIndex:'Overall Index',liveFeed:'Live Feed',
+            resources:'Resources',resourcesDesc:'View and manage soul resources',
+            facilities:'Facilities',facilitiesDesc:'Build and upgrade facilities',build:'Build',output:'Output:',cost:'Cost:',
+            monuments:'Monuments',monumentsDesc:'Honor souls who contributed to the planet',rank:'Rank',soul:'Soul',profession:'Profession',age:'Age',contribution:'Contribution',
+            subscribe:'Subscribe',recommended:'Recommended',
+            createNewSoul:'Create Soul',cost:'Cost:',credits:'Credits',
+            toast:{soulCreated:'Soul created successfully',soulCreatedCn:'栖人创造成功',interventionSuccess:'Intervention successful',interventionSuccessCn:'干预成功',buildSuccess:'Built successfully',buildSuccessCn:'建造成功',networkError:'Network error',networkErrorCn:'网络错误',createFailed:'Creation failed',createFailedCn:'创造失败',buildFailed:'Build failed',buildFailedCn:'建造失败'},
+            months:['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],
+            contactAdmin:'Contact admin to reset password: admin@elibor.com',contactAdminCn:'联系管理员重置密码: admin@elibor.com'
+        },
+        cn:{
+            login:'登录',register:'注册',email:'邮箱',password:'密码',forgotPassword:'忘记密码',backToLogin:'返回登录',
+            mySouls:'我的栖人',soulsDesc:'管理和引导你的栖人成长',createSoul:'创造栖人',
+            planet:'星球状态',planetDesc:'全面的星球发展指标',overallIndex:'综合指数',liveFeed:'实时动态',
+            resources:'资源',resourcesDesc:'查看和管理栖人资源',
+            facilities:'设施',facilitiesDesc:'建造和升级设施',build:'建造',output:'产出:',cost:'费用:',
+            monuments:'纪念碑',monumentsDesc:'纪念为星球做出贡献的栖人',rank:'排名',soul:'栖人',profession:'职业',age:'年龄',contribution:'贡献',
+            subscribe:'订阅',recommended:'推荐',
+            createNewSoul:'创造新栖人',cost:'消耗:',credits:'信用点',
+            toast:{soulCreated:'Soul created successfully',soulCreatedCn:'栖人创造成功',interventionSuccess:'Intervention successful',interventionSuccessCn:'干预成功',buildSuccess:'Built successfully',buildSuccessCn:'建造成功',networkError:'Network error',networkErrorCn:'网络错误',createFailed:'Creation failed',createFailedCn:'创造失败',buildFailed:'Build failed',buildFailedCn:'建造失败'},
+            months:['一月','二月','三月','四月','五月','六月','七月','八月','九月','十月','十一月','十二月'],
+            contactAdmin:'Contact admin to reset password: admin@elibor.com',contactAdminCn:'联系管理员重置密码: admin@elibor.com'
+        }
+    };
+    function t(key){return uiText[currentLang][key]||key}
     const stages={child:'Child',youth:'Youth',adult:'Adult',elder:'Elder',senior:'Senior'};
     const stages_cn={child:'儿童',youth:'青年',adult:'成年',elder:'老年',senior:'暮年'};
     const professions={miner:'Miner',farmer:'Farmer',engineer:'Engineer',scientist:'Scientist',builder:'Builder',energy_engineer:'Energy Eng.',teacher:'Teacher',doctor:'Doctor'};
@@ -409,11 +439,13 @@
         window.addEventListener('resize',()=>{rs();init()});rs();init();a();
     }
     function showRegister(){
+        const cn=currentLang==='cn';
         const f=document.querySelector('.login-form');
-        f.innerHTML='<div class="input-group"><label>Email</label><input type="email" class="input-field" id="regEmail" placeholder="your@email.com" required></div><div class="input-group"><label>Password</label><input type="password" class="input-field" id="regPass" placeholder="••••••••" required></div><button type="button" class="btn-primary" onclick="doRegister()">REGISTER</button><div id="loginMsg" class="login-msg" style="display:none"></div><div class="login-links"><a href="#" onclick="location.reload()">Back to Login</a></div>';
+        f.innerHTML='<div class="input-group"><label>'+(cn?'邮箱':'Email')+'</label><input type="email" class="input-field" id="regEmail" placeholder="your@email.com" required></div><div class="input-group"><label>'+(cn?'密码':'Password')+'</label><input type="password" class="input-field" id="regPass" placeholder="••••••••" required></div><button type="button" class="btn-primary" onclick="doRegister()">'+(cn?'注册':'REGISTER')+'</button><div id="loginMsg" class="login-msg" style="display:none"></div><div class="login-links"><a href="#" onclick="location.reload()">'+(cn?'返回登录':'Back to Login')+'</a></div>';
     }
     async function login(){
         const e=document.getElementById('loginEmail').value,p=document.getElementById('loginPassword').value,msg=document.getElementById('loginMsg');
+        const cn=currentLang==='cn';
         try{
             const d=await api('/auth/login',{method:'POST',body:JSON.stringify({email:e,password:p})});
             if(d.code===200){
@@ -421,18 +453,19 @@
                 token=d.data.token;
                 showApp();
             }else{
-                msg.textContent=d.message||'Login failed';
+                msg.textContent=d.message||(cn?'登录失败':'Login failed');
                 msg.className='login-msg error';
                 msg.style.display='block';
             }
         }catch(err){
-            msg.textContent='Network error';
+            msg.textContent=cn?'网络错误':'Network error';
             msg.className='login-msg error';
             msg.style.display='block';
         }
     }
     async function doRegister(){
         const e2=document.getElementById('regEmail').value,p=document.getElementById('regPass').value,msg=document.getElementById('loginMsg');
+        const cn=currentLang==='cn';
         try{
             const d=await api('/auth/register',{method:'POST',body:JSON.stringify({email:e2,password:p})});
             if(d.code===200){
@@ -440,12 +473,12 @@
                 token=d.data.token;
                 showApp();
             }else{
-                msg.textContent=d.message||'Registration failed';
+                msg.textContent=d.message||(cn?'注册失败':'Registration failed');
                 msg.className='login-msg error';
                 msg.style.display='block';
             }
         }catch(err){
-            msg.textContent='Network error';
+            msg.textContent=cn?'网络错误':'Network error';
             msg.className='login-msg error';
             msg.style.display='block';
         }
@@ -460,16 +493,61 @@
         currentLang=currentLang==='en'?'cn':'en';
         localStorage.setItem('lang',currentLang);
         document.getElementById('langToggle').textContent=currentLang==='en'?'CN':'EN';
+        updateUIText();
         renderSouls();
         renderPlanet();
         renderFacilities();
     }
-    function showForgotPassword(){alert('Contact admin to reset password: admin@elibor.com')}
+    function updateUIText(){
+        const cn=currentLang==='cn';
+        document.getElementById('labelEmail').textContent=cn?'邮箱':'Email';
+        document.getElementById('labelPassword').textContent=cn?'密码':'Password';
+        document.getElementById('btnLogin').textContent=cn?'登录':'LOGIN';
+        document.getElementById('linkRegister').textContent=cn?'注册':'Register';
+        document.getElementById('linkForgot').textContent=cn?'忘记密码':'Forgot Password';
+        document.getElementById('navSouls').textContent=cn?'栖人':'Souls';
+        document.getElementById('navPlanet').textContent=cn?'星球':'Planet';
+        document.getElementById('navResources').textContent=cn?'资源':'Resources';
+        document.getElementById('navFacilities').textContent=cn?'设施':'Facilities';
+        document.getElementById('navMonuments').textContent=cn?'纪念碑':'Monuments';
+        document.getElementById('titleSouls').textContent=cn?'我的栖人':'My Souls';
+        document.getElementById('descSouls').textContent=cn?'管理和引导你的栖人成长':'Manage and guide your souls through life';
+        document.getElementById('btnCreateSoulText').textContent=cn?'创造栖人':'Create Soul';
+        document.getElementById('titlePlanet').textContent=cn?'星球状态':'Planet Status';
+        document.getElementById('descPlanet').textContent=cn?'全面的星球发展指标':'Comprehensive planet development indicators';
+        document.getElementById('labelOverall').textContent=cn?'综合指数':'Overall Index';
+        document.getElementById('titleFeed').textContent=cn?'实时动态':'Live Feed';
+        document.getElementById('titleResources').textContent=cn?'资源':'Resources';
+        document.getElementById('descResources').textContent=cn?'查看和管理栖人资源':'View and manage soul resources';
+        document.getElementById('titleFacilities').textContent=cn?'设施':'Facilities';
+        document.getElementById('descFacilities').textContent=cn?'建造和升级设施':'Build and upgrade facilities';
+        document.getElementById('titleMonuments').textContent=cn?'纪念碑':'Monuments';
+        document.getElementById('descMonuments').textContent=cn?'纪念为星球做出贡献的栖人':'Honor souls who contributed to the planet';
+        document.getElementById('rankHeader').textContent=cn?'排名':'Rank';
+        document.getElementById('soulHeader').textContent=cn?'栖人':'Soul';
+        document.getElementById('profHeader').textContent=cn?'职业':'Profession';
+        document.getElementById('ageHeader').textContent=cn?'年龄':'Age';
+        document.getElementById('contribHeader').textContent=cn?'贡献':'Contribution';
+        document.getElementById('modalTitleSubscribe').textContent=cn?'订阅':'Subscribe';
+        document.getElementById('badgeRecommended').textContent=cn?'推荐':'Recommended';
+        document.getElementById('btnSubProM').textContent=cn?'订阅':'Subscribe';
+        document.getElementById('btnSubProY').textContent=cn?'订阅':'Subscribe';
+        document.getElementById('btnSubMaxM').textContent=cn?'订阅':'Subscribe';
+        document.getElementById('btnSubMaxY').textContent=cn?'订阅':'Subscribe';
+        document.getElementById('modalTitleCreate').textContent=cn?'创造栖人':'Create Soul';
+        document.getElementById('createSoulDesc').textContent=cn?'给你的栖人起个名字开始旅程':'Give your soul a name to begin the journey';
+        document.getElementById('labelSoulName').textContent=cn?'栖人名称':'Soul Name';
+        document.getElementById('labelCost').textContent=cn?'消耗:':'Cost:';
+        document.getElementById('labelCredits').textContent=cn?'信用点':'Credits';
+        document.getElementById('btnCreateSoul').textContent=cn?'创造':'Create';
+    }
+    function showForgotPassword(){alert(currentLang==='cn'?'联系管理员重置密码: admin@elibor.com':'Contact admin to reset password: admin@elibor.com')}
     async function showApp(){
         document.getElementById('loginPage').classList.add('hidden');
         document.getElementById('mainApp').classList.add('active');
         initParticles();
         await loadUserData();
+        updateUIText();
         renderSouls();
         renderPlanet();
         renderFacilities();
