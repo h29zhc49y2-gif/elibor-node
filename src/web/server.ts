@@ -1,7 +1,6 @@
 import express from 'express';
 import cors from 'cors';
 import { createServer } from 'http';
-import { Server } from 'socket.io';
 import { CronJob } from 'cron';
 import logger from '../lib/logger.js';
 import prisma from '../lib/database.js';
@@ -13,40 +12,27 @@ import { TimeEngine } from '../engine/time-engine.js';
 import { BehaviorEngine } from '../engine/behavior-engine.js';
 import { EconomyEngine } from '../engine/economy-engine.js';
 import { EventEngine } from '../engine/event-engine.js';
+import { initIO } from '../lib/socket.js';
 
 const app = express();
 const httpServer = createServer(app);
+const io = initIO(httpServer);
 
-app.get('/health', (req, res) => {
-    res.json({ status: 'ok', timestamp: Date.now() });
-});
-
-const io = new Server(httpServer, {
-    cors: {
-        origin: '*',
-        methods: ['GET', 'POST', 'PUT', 'DELETE'],
-    },
-});
-
-const PORT = parseInt(process.env.PORT || '3000');
-
-// Middleware
 app.use(cors());
 app.use(express.json());
 app.use(express.static('www'));
 
-// Health check
 app.get('/health', (req, res) => {
     res.json({ status: 'ok', timestamp: new Date().toISOString() });
 });
 
-// API Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/souls', soulRoutes);
 app.use('/api/planet', planetRoutes);
 app.use('/api/events', eventRoutes);
 
-// Socket.IO
+const PORT = parseInt(process.env.PORT || '3000');
+
 io.on('connection', (socket) => {
     logger.info(`Client connected: ${socket.id}`);
 
@@ -60,11 +46,9 @@ io.on('connection', (socket) => {
     });
 });
 
-// Export io and timeEngine for use in other modules
 export { io };
 export let timeEngineInstance: TimeEngine;
 
-// Engine Integration
 const timeEngine = new TimeEngine(prisma);
 timeEngineInstance = timeEngine;
 const behaviorEngine = new BehaviorEngine(prisma);
@@ -85,6 +69,7 @@ async function engineTick() {
 
     try {
         const currentTime = await timeEngine.advance();
+
         const activeSouls = await prisma.soul.findMany({
             where: { status: 'alive' },
         });
@@ -93,9 +78,15 @@ async function engineTick() {
 
         for (const soul of activeSouls) {
             try {
+                logger.info(`[Engine] Processing soul ${soul.id} (${soul.name})`);
+
                 await behaviorEngine.updateNeeds(soul);
+
                 const action = await behaviorEngine.decideAction(soul);
+                logger.info(`[Engine] Soul ${soul.name} decided: ${action.type}`);
+
                 await behaviorEngine.executeAction(soul, action);
+
                 await economyEngine.processProduction(soul, action);
             } catch (error) {
                 logger.error(`[Engine] Error processing soul ${soul.id}:`, error);
@@ -103,8 +94,8 @@ async function engineTick() {
         }
 
         await economyEngine.updatePlanetStats(activeSouls);
+
         await eventEngine.processRandomEvents(activeSouls);
-        await eventEngine.processSocialEvents(activeSouls);
 
         if (currentTime.hour === 0 && currentTime.minute < 6) {
             await eventEngine.generateDailyReport(currentTime.day);
@@ -119,38 +110,26 @@ async function engineTick() {
     }
 }
 
-// 每6分钟执行一次（星球1小时）
-const engineJob = new CronJob('*/6 * * * *', engineTick);
-
-// Error handling
-app.use((err: Error, req: express.Request, res: express.Response, next: express.NextFunction) => {
-    logger.error('Unhandled error:', err);
-    res.status(500).json({ error: 'Internal server error' });
-});
+const job = new CronJob('*/6 * * * *', engineTick);
 
 httpServer.listen(PORT, () => {
     logger.info(`🚀 Elibor Web Server running on port ${PORT}`);
     logger.info(`📡 WebSocket server ready`);
-    logger.info('[Engine] Starting engine worker...');
-    engineJob.start();
+    job.start();
     logger.info('[Engine] Worker started, running every 6 minutes...');
-    logger.info('[Engine] Time scale: 6 minutes = 1 planet hour');
     engineTick();
 });
 
-// Graceful shutdown
 process.on('SIGTERM', async () => {
     logger.info('[Server] Received SIGTERM, shutting down...');
-    engineJob.stop();
+    job.stop();
     await prisma.$disconnect();
     process.exit(0);
 });
 
 process.on('SIGINT', async () => {
     logger.info('[Server] Received SIGINT, shutting down...');
-    engineJob.stop();
+    job.stop();
     await prisma.$disconnect();
     process.exit(0);
 });
-
-export default app;
