@@ -2,6 +2,9 @@ import { PrismaClient, Soul } from '@prisma/client';
 import logger from '../lib/logger.js';
 import { ActionType, SoulAction, SoulPersonality } from '../types/soul.js';
 import { io, timeEngineInstance } from '../web/server.js';
+import { ContentEngine, EngineEvent } from './content-engine.js';
+
+const contentEngine = new ContentEngine(new PrismaClient());
 
 export class BehaviorEngine {
     private prisma: PrismaClient;
@@ -10,39 +13,36 @@ export class BehaviorEngine {
         this.prisma = prisma;
     }
 
-    private async emitEvent(soulName: string, action: SoulAction, eventId: number): Promise<void> {
-        const actionMessages: Record<string, {en: string; cn: string; output?: string}> = {
-            working: {en: `${soulName} is working hard`, cn: `${soulName}正在辛勤工作`, output: action.output ? `Produced ${action.output.amount} ${action.output.resourceType}` : ''},
-            resting: {en: `${soulName} is taking a rest`, cn: `${soulName}正在休息`},
-            eating: {en: `${soulName} is enjoying a meal`, cn: `${soulName}正在享用美食`},
-            socializing: {en: `${soulName} is chatting with others`, cn: `${soulName}正在与他人交流`},
-            learning: {en: `${soulName} is studying new knowledge`, cn: `${soulName}正在学习新知识`},
-            exploring: {en: `${soulName} is exploring new areas`, cn: `${soulName}正在探索未知区域`},
-            sleeping: {en: `${soulName} is sleeping soundly`, cn: `${soulName}正在睡觉`},
-            idle: {en: `${soulName} is daydreaming`, cn: `${soulName}正在发呆`},
+    private async emitEvent(soul: Soul, action: SoulAction): Promise<void> {
+        const event: EngineEvent = {
+            source: 'behavior',
+            soulId: soul.id,
+            soulName: soul.name,
+            type: action.type,
+            timestamp: new Date(),
+            urgency: 'low',
+            data: {
+                location: soul.location,
+                action: this.getActionDescription(action.type),
+                output: action.output,
+            },
         };
-        const msg = actionMessages[action.type] || {en: `${soulName} is doing something`, cn: `${soulName}正在做某事`};
-        const message = msg.output ? `${msg.cn}，${msg.output}` : msg.cn;
-        const messageEn = msg.output ? `${msg.en}. ${msg.output}` : msg.en;
-        
-        let planetTime = null;
-        try {
-            if (timeEngineInstance) {
-                planetTime = await timeEngineInstance.getCurrentPlanetTime();
-            }
-        } catch (err) {
-            logger.error('Failed to get planet time for event:', err);
-        }
-        
-        io.emit('new_event', {
-            id: eventId,
-            soulName,
-            action: action.type,
-            message: messageEn,
-            message_cn: message,
-            timestamp: Date.now(),
-            planetTime,
-        });
+
+        await contentEngine.receive(event);
+    }
+
+    private getActionDescription(actionType: string): string {
+        const descriptions: Record<string, string> = {
+            working: '工作',
+            resting: '休息',
+            eating: '用餐',
+            socializing: '社交',
+            learning: '学习',
+            exploring: '探索',
+            sleeping: '睡觉',
+            idle: '发呆',
+        };
+        return descriptions[actionType] || '某事';
     }
 
     async updateNeeds(soul: Soul): Promise<void> {
@@ -175,14 +175,14 @@ export class BehaviorEngine {
             data: {
                 soulId: soul.id,
                 type: 'action',
-                content: this.getActionDescription(soul.name, action),
+                content: `${soul.name}${this.getActionDescription(action.type)}`,
                 metadata: JSON.stringify(action),
             },
         });
 
         // 推送WebSocket事件
         try {
-            await this.emitEvent(soul.name, action, event.id);
+            await this.emitEvent(soul, action);
         } catch (err) {
             logger.error('Failed to emit WebSocket event:', err);
         }
@@ -326,21 +326,6 @@ export class BehaviorEngine {
         if (age < 50) return 'adult';
         if (age < 70) return 'elder';
         return 'ancient';
-    }
-
-    private getActionDescription(name: string, action: SoulAction): string {
-        const actionDesc: Record<string, string> = {
-            working: '正在辛勤工作',
-            resting: '正在休息',
-            eating: '正在享用美食',
-            socializing: '正在与他人交流',
-            learning: '正在学习新知识',
-            exploring: '正在探索未知区域',
-            sleeping: '正在睡觉',
-            idle: '正在发呆',
-        };
-
-        return `${name}${actionDesc[action.type] || '正在做某事'}`;
     }
 
     private async updateResources(soulId: number, resourceType: string, amount: number): Promise<void> {
