@@ -529,7 +529,7 @@
         socket.on('connect',()=>{ if(token&&userData.id)socket.emit('join','user_'+userData.id); });
         socket.on('new_event',(event)=>{
             const ts=event.timestamp||Date.now();
-            if(event.type==='soul'){
+            if(event.soulId){
                 liveEvents.push({...event,timestamp:ts});
                 if(liveEvents.length>liveEventsMax){
                     liveEvents.shift();
@@ -549,25 +549,22 @@
         const tEl=document.getElementById('timeline');
         if(!tEl)return;
         const cn=currentLang==='cn';
-        
+
         const recentEvents=planetEvents.slice(-20);
-        
+
         if(recentEvents.length===0){
             tEl.innerHTML='<div style="text-align:center;padding:40px;color:var(--text-muted);font-size:13px;">'+(cn?'暂无星球动态':'No planet events yet')+'</div>';
             return;
         }
-        
-        let html=recentEvents.map(e=>{
+
+        let html=recentEvents.filter(e=>e.message||e.messageCn).map(e=>{
             const time=e.planetTime?formatPlanetTime(e.planetTime,cn):'';
             const icon=e.icon?'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;margin-right:6px;color:var(--neon-cyan)"><use href="#icon-'+e.icon+'"/></svg>':'';
-            const msgCn=e.messageCn||e.message_cn||e.message||'';
-            const msgEn=e.messageEn||e.message||'';
-            return '<div class="timeline-item"><div class="timeline-content">'+icon+(cn?msgCn:msgEn)+'</div><div class="timeline-time">'+time+'</div></div>';
+            const msg=e.message||e.messageCn||e.messageEn||'Loading...';
+            return '<div class="timeline-item"><div class="timeline-content">'+icon+msg+'</div><div class="timeline-time">'+time+'</div></div>';
         }).join('');
-        
-        tEl.innerHTML=html;
-        
-        setTimeout(()=>{ tEl.scrollTop=tEl.scrollHeight; },50);
+
+        tEl.innerHTML=html||'<div style="text-align:center;color:var(--text-muted);">'+(cn?'暂无动态':'No events')+'</div>';
         
         renderSouls();
     }
@@ -575,20 +572,19 @@
     function renderLiveFeedList(){
         const listEl=document.getElementById('liveFeedList');
         const cn=currentLang==='cn';
-        let filteredEvents=liveEvents;
+        let filteredEvents=liveEvents.filter(e=>e.message||e.messageCn||e.messageEn);
         if(currentFilter!=='all'){
-            filteredEvents=liveEvents.filter(e=>e.type===currentFilter);
+            filteredEvents=filteredEvents.filter(e=>e.soulName===currentFilter);
         }
         if(filteredEvents.length===0){
             listEl.innerHTML='<div style="text-align:center;padding:30px;color:var(--text-muted);font-size:13px;">'+(cn?'暂无动态':'No events')+'</div>';
             return;
         }
-        listEl.innerHTML=filteredEvents.slice(0,10).map(e=>{
+        listEl.innerHTML=filteredEvents.slice(-10).map(e=>{
             const time=e.planetTime?formatPlanetTime(e.planetTime,cn):'';
-            const content=e.message?(cn?e.message_cn:e.message):e.content;
-            const name=e.soulName||'System';
-            const type=e.type||'system';
-            return '<div class="live-feed-item"><div class="live-feed-avatar">'+name[0]+'</div><div class="live-feed-content"><div class="live-feed-text">'+content+'</div><div class="live-feed-time">'+name+' · '+time+'</div></div><span class="live-feed-badge '+type+'">'+getTypeLabel(type,cn)+'</span></div>';
+            const content=e.soulName?'['+e.soulName+'] '+e.message:'';
+            const icon=e.icon?'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:16px;height:16px;margin-right:6px;color:var(--neon-cyan)"><use href="#icon-'+e.icon+'"/></svg>':'';
+            return '<div class="live-feed-item"><div class="live-feed-icon">'+icon+'</div><div class="live-feed-content"><div class="live-feed-text">'+content+'</div><div class="live-feed-time">'+time+'</div></div></div>';
         }).join('');
     }
     function getTypeLabel(type,cn){
