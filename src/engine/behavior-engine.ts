@@ -1,12 +1,37 @@
 import { PrismaClient, Soul } from '@prisma/client';
 import logger from '../lib/logger.js';
 import { ActionType, SoulAction, SoulPersonality } from '../types/soul.js';
+import { io } from '../web/server.js';
 
 export class BehaviorEngine {
     private prisma: PrismaClient;
 
     constructor(prisma: PrismaClient) {
         this.prisma = prisma;
+    }
+
+    private async emitEvent(soulName: string, action: SoulAction, eventId: number): Promise<void> {
+        const actionMessages: Record<string, {en: string; cn: string; output?: string}> = {
+            working: {en: `${soulName} is working hard`, cn: `${soulName}正在辛勤工作`, output: action.output ? `Produced ${action.output.amount} ${action.output.resourceType}` : ''},
+            resting: {en: `${soulName} is taking a rest`, cn: `${soulName}正在休息`},
+            eating: {en: `${soulName} is enjoying a meal`, cn: `${soulName}正在享用美食`},
+            socializing: {en: `${soulName} is chatting with others`, cn: `${soulName}正在与他人交流`},
+            learning: {en: `${soulName} is studying new knowledge`, cn: `${soulName}正在学习新知识`},
+            exploring: {en: `${soulName} is exploring new areas`, cn: `${soulName}正在探索未知区域`},
+            sleeping: {en: `${soulName} is sleeping soundly`, cn: `${soulName}正在睡觉`},
+            idle: {en: `${soulName} is daydreaming`, cn: `${soulName}正在发呆`},
+        };
+        const msg = actionMessages[action.type] || {en: `${soulName} is doing something`, cn: `${soulName}正在做某事`};
+        const message = msg.output ? `${msg.cn}，${msg.output}` : msg.cn;
+        const messageEn = msg.output ? `${msg.en}. ${msg.output}` : msg.en;
+        io.emit('new_event', {
+            id: eventId,
+            soulName,
+            action: action.type,
+            message: messageEn,
+            message_cn: message,
+            timestamp: Date.now(),
+        });
     }
 
     async updateNeeds(soul: Soul): Promise<void> {
@@ -135,7 +160,7 @@ export class BehaviorEngine {
         });
 
         // 记录事件
-        await this.prisma.event.create({
+        const event = await this.prisma.event.create({
             data: {
                 soulId: soul.id,
                 type: 'action',
@@ -143,6 +168,13 @@ export class BehaviorEngine {
                 metadata: JSON.stringify(action),
             },
         });
+
+        // 推送WebSocket事件
+        try {
+            await this.emitEvent(soul.name, action, event.id);
+        } catch (err) {
+            logger.error('Failed to emit WebSocket event:', err);
+        }
 
         // 如果有产出，更新资源
         if (action.output) {

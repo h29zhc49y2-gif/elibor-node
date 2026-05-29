@@ -6,6 +6,7 @@
     <title>聚栖 Elibor</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
     <style>
         *{margin:0;padding:0;box-sizing:border-box}
         :root{--bg-deep:#050508;--bg-dark:#0a0e17;--bg-card:#0d1117;--bg-input:#161b22;--neon-cyan:#00d4ff;--neon-purple:#8b5cf6;--neon-green:#00ff88;--neon-amber:#ffaa00;--neon-red:#ff4757;--text-primary:#f0f6fc;--text-secondary:#8b949e;--text-muted:#484f58;--radius:12px;--radius-lg:20px}
@@ -366,12 +367,50 @@
     <div class="toast" id="toast"></div>
     <script>
     const API_BASE='https://elibor-node-production.up.railway.app/api';
+    const WS_BASE='https://elibor-node-production.up.railway.app';
     let token=localStorage.getItem('elibor_token');
     let userData={};
     let souls=[];
     let selectedSoulId=null;
     let currentLang=localStorage.getItem('lang')||detectBrowserLang();
+    let socket=null;
+    let liveEvents=[];
+    let liveEventsMax=50;
     function detectBrowserLang(){const nav=navigator.language||navigator.userLanguage;return nav.startsWith('zh')?'cn':'en'}
+    function initSocket(){
+        if(socket)return;
+        socket=io(WS_BASE,{ transports:['websocket','polling'] });
+        socket.on('connect',()=>{ if(token&&userData.id)socket.emit('join','user_'+userData.id); });
+        socket.on('new_event',(event)=>{
+            liveEvents.unshift({...event,timestamp:event.timestamp||Date.now()});
+            if(liveEvents.length>liveEventsMax)liveEvents.pop();
+            renderLiveFeed();
+        });
+        socket.on('disconnect',()=>{});
+    }
+    function renderLiveFeed(){
+        const tEl=document.getElementById('timeline');
+        if(!tEl)return;
+        const cn=currentLang==='cn';
+        if(liveEvents.length===0){
+            tEl.innerHTML='<div style="text-align:center;padding:40px;color:var(--text-muted);font-size:13px;">'+(cn?'暂无实时动态':'No live events yet')+'</div>';
+            return;
+        }
+        tEl.innerHTML=liveEvents.slice(0,20).map(e=>{
+            const time=formatTimeAgo(e.timestamp,cn);
+            return'<div class="timeline-item"><div class="timeline-content">'+(cn?e.message_cn:e.message)+'</div><div class="timeline-time">'+time+'</div></div>';
+        }).join('');
+    }
+    function formatTimeAgo(ts,cn){
+        const diff=Date.now()-ts;
+        const mins=Math.floor(diff/60000);
+        const hours=Math.floor(diff/3600000);
+        if(mins<1)return cn?'刚刚':'Just now';
+        if(mins<60)return cn?mins+'分钟前':mins+' mins ago';
+        if(hours<24)return cn?hours+'小时前':hours+' hours ago';
+        return cn?Math.floor(hours/24)+'天前':Math.floor(hours/24)+' days ago';
+    }
+    const logger={info:()=>{},error:console.error};
     const uiText={
         en:{
             login:'LOGIN',register:'REGISTER',email:'Email',password:'Password',forgotPassword:'Forgot Password',backToLogin:'Back to Login',
@@ -546,6 +585,7 @@
         document.getElementById('loginPage').classList.add('hidden');
         document.getElementById('mainApp').classList.add('active');
         initParticles();
+        initSocket();
         await loadUserData();
         updateUIText();
         renderSouls();
