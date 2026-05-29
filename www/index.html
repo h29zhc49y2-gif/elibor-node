@@ -793,21 +793,7 @@
         setInterval(fetchPlanetTime,30000);
     }
     function initSampleEvents(){
-        const cn=currentLang==='cn';
-        if(liveEvents.length===0){
-            liveEvents=[
-                {soulName:'系统',type:'system',message:cn?'欢迎来到聚栖星球！':'Welcome to Elibor!',message_cn:'欢迎来到聚栖星球！',timestamp:Date.now()},
-                {soulName:'测试栖人',type:'action',message:cn?'测试栖人开始工作了':'Test Soul started working',message_cn:'测试栖人开始工作了',timestamp:Date.now()-60000},
-                {soulName:'小月',type:'social',message:cn?'小月与其他栖人进行了友好的交流':'Xiaoyue made new friends',message_cn:'小月与其他栖人进行了友好的交流',timestamp:Date.now()-120000},
-                {soulName:'系统',type:'event',message:cn?'聚栖历正式启动！':'Elibor Calendar started!',message_cn:'聚栖历正式启动！',timestamp:Date.now()-180000},
-                {soulName:'阿木',type:'action',message:cn?'阿木完成了今天的学习任务':'A Mu finished daily learning',message_cn:'阿木完成了今天的学习任务',timestamp:Date.now()-240000},
-                {soulName:'小芳',type:'action',message:cn?'小芳正在休息恢复精力':'Xiao Fang is resting',message_cn:'小芳正在休息恢复精力',timestamp:Date.now()-300000},
-                {soulName:'系统',type:'event',message:cn?'星球综合指数提升了！':'Planet index increased!',message_cn:'星球综合指数提升了！',timestamp:Date.now()-360000},
-                {soulName:'大壮',type:'action',message:cn?'大壮在矿场辛勤工作中':'Da Zhuang is mining',message_cn:'大壮在矿场辛勤工作中',timestamp:Date.now()-420000},
-                {soulName:'小美',type:'social',message:cn?'小美举办了一场小型聚会':'Xiao Mei hosted a gathering',message_cn:'小美举办了一场小型聚会',timestamp:Date.now()-480000},
-                {soulName:'系统',type:'system',message:cn?'实时动态系统已上线':'Live feed system online',message_cn:'实时动态系统已上线',timestamp:Date.now()-540000}
-            ];
-        }
+        // 不再添加虚假示例事件，等待真实事件推送
     }
     async function loadUserData(){
         try{
