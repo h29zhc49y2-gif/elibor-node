@@ -881,7 +881,7 @@
                     </div>\
                     <div class="soul-card-right">\
                         <div style="font-size:13px;color:var(--text-secondary);margin-bottom:12px;display:flex;align-items:center;gap:6px;"><svg viewBox="0 0 24 24" fill="none" stroke="var(--neon-cyan)" stroke-width="2" width="16" height="16"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>'+(cn?'实时动态':'Activity')+'</div>\
-                        <div class="timeline-mini">'+displayEvents.map(e=>{ const time=e.planetTime?formatPlanetTime(e.planetTime,cn):(e.timestamp?formatTimeAgo(e.timestamp,cn):e.time); const content=e.message? (cn?e.message_cn:e.message) : e.content; return '<div class="timeline-mini-item"><div><div class="timeline-mini-content">'+content+'</div><div class="timeline-mini-time">'+time+'</div></div></div>'; }).join('')+'</div>\
+                        <div class="timeline-mini">'+displayEvents.map(e=>{ const time=e.planetTime?formatPlanetTime(e.planetTime,cn):e.time; const content=e.message? (cn?e.message_cn:e.message) : e.content; return '<div class="timeline-mini-item"><div><div class="timeline-mini-content">'+content+'</div><div class="timeline-mini-time">'+time+'</div></div></div>'; }).join('')+'</div>\
                     </div>\
                 </div>\
                 <div class="soul-upgrade-section">\
