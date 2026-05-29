@@ -12,6 +12,7 @@ export interface PlanetTime {
 
 export class TimeEngine {
     private prisma: PrismaClient;
+    private lastTickRealTime: number | null = null;
 
     constructor(prisma: PrismaClient) {
         this.prisma = prisma;
@@ -33,6 +34,7 @@ export class TimeEngine {
                     month: 1,
                     dayCount: 1,
                     hour: 6,
+                    lastTickTime: new Date(),
                 },
             });
         }
@@ -63,6 +65,7 @@ export class TimeEngine {
             logger.info(`[Time] New year: 聚栖${newYear}年`);
         }
 
+        const now = new Date();
         await this.prisma.planetStats.update({
             where: { id: stats.id },
             data: {
@@ -70,8 +73,11 @@ export class TimeEngine {
                 month: newMonth,
                 dayCount: newDay,
                 hour: newHour,
+                lastTickTime: now,
             },
         });
+
+        this.lastTickRealTime = now.getTime();
 
         return {
             year: newYear,
@@ -79,11 +85,88 @@ export class TimeEngine {
             day: newDay,
             hour: newHour,
             minute: 0,
+            timestamp: now,
+        };
+    }
+
+    async getCurrentPlanetTime(): Promise<PlanetTime> {
+        let stats = await this.prisma.planetStats.findFirst();
+
+        if (!stats) {
+            stats = await this.prisma.planetStats.create({
+                data: {
+                    industry: 10,
+                    agriculture: 10,
+                    housing: 10,
+                    technology: 5,
+                    energy: 10,
+                    population: 0,
+                    year: 0,
+                    month: 1,
+                    dayCount: 1,
+                    hour: 6,
+                    lastTickTime: new Date(),
+                },
+            });
+        }
+
+        const lastTickTime = stats.lastTickTime ? stats.lastTickTime.getTime() : Date.now();
+        const now = Date.now();
+        const realMinutesPassed = (now - lastTickTime) / 60000;
+
+        const planetMinutesPassed = realMinutesPassed * 10;
+
+        let totalMinutes = stats.hour * 60 + planetMinutesPassed;
+        let newHour = Math.floor(totalMinutes / 60) % 24;
+        let newMinute = Math.floor(totalMinutes % 60);
+
+        let newDay = stats.dayCount;
+        let newMonth = stats.month || 1;
+        let newYear = stats.year || 0;
+
+        const hoursPassed = Math.floor(totalMinutes / 60);
+        if (hoursPassed > 0) {
+            const daysInMonth = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+            let totalHoursToAdd = hoursPassed;
+
+            while (totalHoursToAdd > 0) {
+                const hoursLeftInDay = 24 - newHour;
+                if (totalHoursToAdd >= hoursLeftInDay) {
+                    totalHoursToAdd -= hoursLeftInDay;
+                    newDay += 1;
+                    newHour = 0;
+
+                    const days = daysInMonth[newMonth - 1];
+                    if (newDay > days) {
+                        newDay = 1;
+                        newMonth += 1;
+                        if (newMonth > 12) {
+                            newMonth = 1;
+                            newYear += 1;
+                        }
+                    }
+                } else {
+                    newHour += totalHoursToAdd;
+                    totalHoursToAdd = 0;
+                }
+            }
+        }
+
+        return {
+            year: newYear,
+            month: newMonth,
+            day: newDay,
+            hour: newHour,
+            minute: newMinute,
             timestamp: new Date(),
         };
     }
 
     getPlanetTimeString(time: PlanetTime): string {
-        return `聚栖${time.year}年 ${String(time.month).padStart(2, '0')}月${String(time.day).padStart(2, '0')}日 ${String(time.hour).padStart(2, '0')}:00`;
+        return `聚栖${time.year}年 ${String(time.month).padStart(2, '0')}月${String(time.day).padStart(2, '0')}日 ${String(time.hour).padStart(2, '0')}:${String(time.minute).padStart(2, '0')}`;
+    }
+
+    getPlanetTimeStringEn(time: PlanetTime): string {
+        return `Year ${time.year} ${String(time.month).padStart(2, '0')}/${String(time.day).padStart(2, '0')} ${String(time.hour).padStart(2, '0')}:${String(time.minute).padStart(2, '0')}`;
     }
 }

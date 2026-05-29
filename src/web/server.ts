@@ -55,11 +55,13 @@ io.on('connection', (socket) => {
     });
 });
 
-// Export io for use in other modules
+// Export io and timeEngine for use in other modules
 export { io };
+export let timeEngineInstance: TimeEngine;
 
 // Engine Integration
 const timeEngine = new TimeEngine(prisma);
+timeEngineInstance = timeEngine;
 const behaviorEngine = new BehaviorEngine(prisma);
 const economyEngine = new EconomyEngine(prisma);
 const eventEngine = new EventEngine(prisma);

@@ -64,6 +64,7 @@ model PlanetStats {
     month       Int      @default(1)
     dayCount    Int      @default(1)
     hour        Int      @default(6)
+    lastTickTime DateTime?
     updatedAt   DateTime @updatedAt
 }
 

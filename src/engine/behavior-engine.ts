@@ -1,7 +1,7 @@
 import { PrismaClient, Soul } from '@prisma/client';
 import logger from '../lib/logger.js';
 import { ActionType, SoulAction, SoulPersonality } from '../types/soul.js';
-import { io } from '../web/server.js';
+import { io, timeEngineInstance } from '../web/server.js';
 
 export class BehaviorEngine {
     private prisma: PrismaClient;
@@ -24,6 +24,16 @@ export class BehaviorEngine {
         const msg = actionMessages[action.type] || {en: `${soulName} is doing something`, cn: `${soulName}正在做某事`};
         const message = msg.output ? `${msg.cn}，${msg.output}` : msg.cn;
         const messageEn = msg.output ? `${msg.en}. ${msg.output}` : msg.en;
+        
+        let planetTime = null;
+        try {
+            if (timeEngineInstance) {
+                planetTime = await timeEngineInstance.getCurrentPlanetTime();
+            }
+        } catch (err) {
+            logger.error('Failed to get planet time for event:', err);
+        }
+        
         io.emit('new_event', {
             id: eventId,
             soulName,
@@ -31,6 +41,7 @@ export class BehaviorEngine {
             message: messageEn,
             message_cn: message,
             timestamp: Date.now(),
+            planetTime,
         });
     }
 

@@ -443,16 +443,82 @@
     let socket=null;
     let liveEvents=[];
     let liveEventsMax=50;
+    let currentPlanetTime=null;
+    let lastRealTimeUpdate=null;
+    let timeUpdateInterval=null;
+    
     function detectBrowserLang(){const nav=navigator.language||navigator.userLanguage;return nav.startsWith('zh')?'cn':'en'}
-    function formatTimeAgo(ts,cn){
-        const diff=Date.now()-ts;
-        const mins=Math.floor(diff/60000);
-        const hours=Math.floor(diff/3600000);
-        if(mins<1)return cn?'刚刚':'Just now';
-        if(mins<60)return cn?mins+'分钟前':mins+' mins ago';
-        if(hours<24)return cn?hours+'小时前':hours+' hours ago';
-        return cn?Math.floor(hours/24)+'天前':Math.floor(hours/24)+' days ago';
+    
+    function formatPlanetTime(time, cn){
+        if(!time)return '';
+        if(cn){
+            return `聚栖${time.year}年 ${String(time.month).padStart(2,'0')}月${String(time.day).padStart(2,'0')}日 ${String(time.hour).padStart(2,'0')}:${String(time.minute).padStart(2,'0')}`;
+        }
+        return `Year ${time.year} ${String(time.month).padStart(2,'0')}/${String(time.day).padStart(2,'0')} ${String(time.hour).padStart(2,'0')}:${String(time.minute).padStart(2,'0')}`;
     }
+    
+    function updatePlanetTimeDisplay(){
+        const cn=currentLang==='cn';
+        const displayEl=document.getElementById('planetTimeDisplay');
+        if(!displayEl||!currentPlanetTime)return;
+        
+        const now=Date.now();
+        const elapsedRealMs=lastRealTimeUpdate?(now-lastRealTimeUpdate):0;
+        lastRealTimeUpdate=now;
+        
+        const elapsedPlanetMinutes=(elapsedRealMs/60000)*10;
+        
+        let totalMinutes=currentPlanetTime.hour*60+currentPlanetTime.minute+elapsedPlanetMinutes;
+        let newHour=Math.floor(totalMinutes/60)%24;
+        let newMinute=Math.floor(totalMinutes%60);
+        let newDay=currentPlanetTime.day;
+        let newMonth=currentPlanetTime.month;
+        let newYear=currentPlanetTime.year;
+        
+        const daysInMonth=[31,28,31,30,31,30,31,31,30,31,30,31];
+        const hoursPassed=Math.floor(totalMinutes/60);
+        if(hoursPassed>0){
+            let totalHoursToAdd=hoursPassed;
+            while(totalHoursToAdd>0){
+                const hoursLeftInDay=24-newHour;
+                if(totalHoursToAdd>=hoursLeftInDay){
+                    totalHoursToAdd-=hoursLeftInDay;
+                    newDay++;
+                    newHour=0;
+                    
+                    const days=daysInMonth[newMonth-1];
+                    if(newDay>days){
+                        newDay=1;
+                        newMonth++;
+                        if(newMonth>12){
+                            newMonth=1;
+                            newYear++;
+                        }
+                    }
+                }else{
+                    newHour+=totalHoursToAdd;
+                    totalHoursToAdd=0;
+                }
+            }
+        }
+        
+        const timeStr=cn?`聚栖${newYear}年 ${String(newMonth).padStart(2,'0')}月${String(newDay).padStart(2,'0')}日 ${String(newHour).padStart(2,'0')}:${String(newMinute).padStart(2,'0')}`:`Year ${newYear} ${String(newMonth).padStart(2,'0')}/${String(newDay).padStart(2,'0')} ${String(newHour).padStart(2,'0')}:${String(newMinute).padStart(2,'0')}`;
+        displayEl.textContent=timeStr;
+    }
+    
+    async function fetchPlanetTime(){
+        try{
+            const res=await api('/planet/time');
+            if(res.code===200&&res.data){
+                currentPlanetTime=res.data;
+                lastRealTimeUpdate=Date.now();
+                updatePlanetTimeDisplay();
+            }
+        }catch(err){
+            console.error('Failed to fetch planet time:',err);
+        }
+    }
+    
     function initSocket(){
         if(socket)return;
         socket=io(WS_BASE,{ transports:['websocket','polling'] });
@@ -474,7 +540,7 @@
             return;
         }
         tEl.innerHTML=liveEvents.slice(0,20).map(e=>{
-            const time=formatTimeAgo(e.timestamp,cn);
+            const time=e.planetTime?formatPlanetTime(e.planetTime,cn):'';
             return '<div class="timeline-item"><div class="timeline-content">'+(cn?e.message_cn:e.message)+'</div><div class="timeline-time">'+time+'</div></div>';
         }).join('');
         
@@ -494,7 +560,7 @@
             return;
         }
         listEl.innerHTML=filteredEvents.slice(0,10).map(e=>{
-            const time=formatTimeAgo(e.timestamp,cn);
+            const time=e.planetTime?formatPlanetTime(e.planetTime,cn):'';
             const content=e.message?(cn?e.message_cn:e.message):e.content;
             const name=e.soulName||'System';
             const type=e.type||'system';
@@ -515,11 +581,6 @@
         document.querySelectorAll('.filter-btn').forEach(b=>b.classList.remove('active'));
         document.getElementById('filter'+filter.charAt(0).toUpperCase()+filter.slice(1)).classList.add('active');
         renderLiveFeedList();
-    }
-    function updatePlanetTime(year,month,day,hour){
-        const cn=currentLang==='cn';
-        const timeStr=cn?`聚栖${year}年 ${String(month).padStart(2,'0')}月${String(day).padStart(2,'0')}日 ${String(hour).padStart(2,'0')}:00`:`Year ${year} ${String(month).padStart(2,'0')}/${String(day).padStart(2,'0')} ${String(hour).padStart(2,'0')}:00`;
-        document.getElementById('planetTimeDisplay').textContent=timeStr;
     }
     const logger={info:()=>{},error:console.error};
     const uiText={
@@ -710,6 +771,14 @@
         renderPlanet();
         renderFacilities();
         renderLiveFeedList();
+        
+        // 获取初始星球时间并启动更新定时器
+        await fetchPlanetTime();
+        if(timeUpdateInterval) clearInterval(timeUpdateInterval);
+        // 每1秒更新一次显示（根据现实时间计算聚栖时间）
+        timeUpdateInterval=setInterval(updatePlanetTimeDisplay,1000);
+        // 每30秒从服务器重新同步一次时间
+        setInterval(fetchPlanetTime,30000);
     }
     function initSampleEvents(){
         const cn=currentLang==='cn';
@@ -812,7 +881,7 @@
                     </div>\
                     <div class="soul-card-right">\
                         <div style="font-size:13px;color:var(--text-secondary);margin-bottom:12px;display:flex;align-items:center;gap:6px;"><svg viewBox="0 0 24 24" fill="none" stroke="var(--neon-cyan)" stroke-width="2" width="16" height="16"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>'+(cn?'实时动态':'Activity')+'</div>\
-                        <div class="timeline-mini">'+displayEvents.map(e=>{ const time=e.timestamp?formatTimeAgo(e.timestamp,cn):e.time; const content=e.message? (cn?e.message_cn:e.message) : e.content; return '<div class="timeline-mini-item"><div><div class="timeline-mini-content">'+content+'</div><div class="timeline-mini-time">'+time+'</div></div></div>'; }).join('')+'</div>\
+                        <div class="timeline-mini">'+displayEvents.map(e=>{ const time=e.planetTime?formatPlanetTime(e.planetTime,cn):(e.timestamp?formatTimeAgo(e.timestamp,cn):e.time); const content=e.message? (cn?e.message_cn:e.message) : e.content; return '<div class="timeline-mini-item"><div><div class="timeline-mini-content">'+content+'</div><div class="timeline-mini-time">'+time+'</div></div></div>'; }).join('')+'</div>\
                     </div>\
                 </div>\
                 <div class="soul-upgrade-section">\

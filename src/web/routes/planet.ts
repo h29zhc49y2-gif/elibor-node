@@ -2,8 +2,10 @@ import { Router, Request, Response } from 'express';
 import prisma from '../../lib/database.js';
 import { authMiddleware } from '../middleware/auth.js';
 import logger from '../../lib/logger.js';
+import { TimeEngine } from '../../engine/time-engine.js';
 
 const router = Router();
+const timeEngine = new TimeEngine(prisma);
 
 // GET /api/planet/stats
 router.get('/stats', authMiddleware, async (req: Request, res: Response) => {
@@ -20,11 +22,16 @@ router.get('/stats', authMiddleware, async (req: Request, res: Response) => {
                     energy: 10,
                     population: 0,
                     dayCount: 1,
+                    year: 0,
+                    month: 1,
+                    hour: 6,
+                    lastTickTime: new Date(),
                 },
             });
         }
 
         const prosperity = calculateProsperity(stats);
+        const planetTime = await timeEngine.getCurrentPlanetTime();
 
         res.json({
             code: 200,
@@ -32,11 +39,28 @@ router.get('/stats', authMiddleware, async (req: Request, res: Response) => {
             data: {
                 ...stats,
                 prosperity,
+                planetTime,
             },
         });
     } catch (error) {
         logger.error('Get planet stats error:', error);
         res.status(500).json({ error: 'Failed to get planet stats' });
+    }
+});
+
+// GET /api/planet/time
+router.get('/time', authMiddleware, async (req: Request, res: Response) => {
+    try {
+        const planetTime = await timeEngine.getCurrentPlanetTime();
+
+        res.json({
+            code: 200,
+            message: 'success',
+            data: planetTime,
+        });
+    } catch (error) {
+        logger.error('Get planet time error:', error);
+        res.status(500).json({ error: 'Failed to get planet time' });
     }
 });
 
