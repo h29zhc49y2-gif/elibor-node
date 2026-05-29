@@ -54,11 +54,14 @@ model Soul {
 
 model PlanetStats {
     id          Int      @id @default(autoincrement())
-    industry    Float    @default(0)
-    agriculture Float    @default(0)
-    housing     Float    @default(0)
-    technology  Float    @default(0)
-    energy      Float    @default(0)
+
+    oxygen      Float    @default(0)
+    climate     Float    @default(5)
+    water       Float    @default(0)
+    biomass     Float    @default(0)
+    tir         Float    @default(0)
+    stage       Int      @default(1)
+
     population  Int      @default(0)
     year        Int      @default(0)
     month       Int      @default(1)

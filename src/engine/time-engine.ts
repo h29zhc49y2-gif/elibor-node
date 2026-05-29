@@ -24,11 +24,12 @@ export class TimeEngine {
         if (!stats) {
             stats = await this.prisma.planetStats.create({
                 data: {
-                    industry: 10,
-                    agriculture: 10,
-                    housing: 10,
-                    technology: 5,
-                    energy: 10,
+                    oxygen: 0,
+                    climate: 5,
+                    water: 0,
+                    biomass: 0,
+                    tir: 5,
+                    stage: 1,
                     population: 0,
                     year: 0,
                     month: 1,
@@ -95,11 +96,12 @@ export class TimeEngine {
         if (!stats) {
             stats = await this.prisma.planetStats.create({
                 data: {
-                    industry: 10,
-                    agriculture: 10,
-                    housing: 10,
-                    technology: 5,
-                    energy: 10,
+                    oxygen: 0,
+                    climate: 5,
+                    water: 0,
+                    biomass: 0,
+                    tir: 5,
+                    stage: 1,
                     population: 0,
                     year: 0,
                     month: 1,

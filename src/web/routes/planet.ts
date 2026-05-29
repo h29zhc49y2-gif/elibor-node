@@ -7,7 +7,6 @@ import { TimeEngine } from '../../engine/time-engine.js';
 const router = Router();
 const timeEngine = new TimeEngine(prisma);
 
-// GET /api/planet/stats
 router.get('/stats', authMiddleware, async (req: Request, res: Response) => {
     try {
         let stats = await prisma.planetStats.findFirst();
@@ -15,11 +14,12 @@ router.get('/stats', authMiddleware, async (req: Request, res: Response) => {
         if (!stats) {
             stats = await prisma.planetStats.create({
                 data: {
-                    industry: 10,
-                    agriculture: 10,
-                    housing: 10,
-                    technology: 5,
-                    energy: 10,
+                    oxygen: 0,
+                    climate: 5,
+                    water: 0,
+                    biomass: 0,
+                    tir: 5,
+                    stage: 1,
                     population: 0,
                     dayCount: 1,
                     year: 0,
@@ -30,7 +30,6 @@ router.get('/stats', authMiddleware, async (req: Request, res: Response) => {
             });
         }
 
-        const prosperity = calculateProsperity(stats);
         const planetTime = await timeEngine.getCurrentPlanetTime();
 
         res.json({
@@ -38,7 +37,6 @@ router.get('/stats', authMiddleware, async (req: Request, res: Response) => {
             message: 'success',
             data: {
                 ...stats,
-                prosperity,
                 planetTime,
             },
         });
@@ -48,7 +46,6 @@ router.get('/stats', authMiddleware, async (req: Request, res: Response) => {
     }
 });
 
-// GET /api/planet/time
 router.get('/time', authMiddleware, async (req: Request, res: Response) => {
     try {
         const planetTime = await timeEngine.getCurrentPlanetTime();
@@ -64,7 +61,6 @@ router.get('/time', authMiddleware, async (req: Request, res: Response) => {
     }
 });
 
-// GET /api/planet/timeline
 router.get('/timeline', authMiddleware, async (req: Request, res: Response) => {
     try {
         const events = await prisma.event.findMany({
@@ -85,21 +81,5 @@ router.get('/timeline', authMiddleware, async (req: Request, res: Response) => {
         res.status(500).json({ error: 'Failed to get planet timeline' });
     }
 });
-
-function calculateProsperity(stats: {
-    industry: number;
-    agriculture: number;
-    housing: number;
-    technology: number;
-    energy: number;
-}): number {
-    return Math.round(
-        stats.industry * 0.25 +
-        stats.agriculture * 0.20 +
-        stats.housing * 0.20 +
-        stats.technology * 0.15 +
-        stats.energy * 0.20
-    );
-}
 
 export default router;
