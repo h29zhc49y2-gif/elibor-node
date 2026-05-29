@@ -47,16 +47,19 @@ async function engineTick() {
 
         for (const soul of activeSouls) {
             try {
+                logger.info(`[Engine] Processing soul ${soul.id} (${soul.name})`);
+
                 await driveEngine.tick(soul);
-                
+
                 await behaviorEngine.updateNeeds(soul);
-                
+
                 const action = await behaviorEngine.decideAction(soul);
-                
+                logger.info(`[Engine] Soul ${soul.name} decided: ${action.type}`);
+
                 await behaviorEngine.executeAction(soul, action);
-                
+
                 await economyEngine.processProduction(soul, action);
-                
+
                 await driveEngine.satisfyDrive(soul.id, await driveEngine.getDominantDrive(soul.id), 0.05);
             } catch (error) {
                 logger.error(`[Engine] Error processing soul ${soul.id}:`, error);

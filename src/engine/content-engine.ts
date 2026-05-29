@@ -549,21 +549,25 @@ export class ContentEngine {
     
     async receive(event: EngineEvent): Promise<void> {
         const cooldownKey = `${event.source}:${event.type}:${event.soulId || 'global'}`;
-        
+        logger.info(`[ContentEngine] Received event: ${event.source}:${event.type}, soulId=${event.soulId}`);
+
         if (this.isCoolingDown(cooldownKey, event.source)) {
+            logger.info(`[ContentEngine] Skipping due to cooldown`);
             return;
         }
-        
+
         const content = await this.generate(event);
-        
+
         if (!content) {
+            logger.info(`[ContentEngine] No content generated for ${event.source}:${event.type}`);
             return;
         }
-        
+
         this.updateCooldown(cooldownKey);
-        
+
         this.broadcast(content);
-        
+        logger.info(`[ContentEngine] Broadcasted: ${content.message}`);
+
         await this.saveToDatabase(content);
     }
     
